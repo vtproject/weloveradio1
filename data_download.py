@@ -194,7 +194,7 @@ logger.addHandler(fh)
 
 try:
     logger.info("downloading playlists from %s", tracklist_day)
-    sqliteConnection = sqlite3.connect('R1_TEST.db') #### PROD / TEST #####
+    sqliteConnection = sqlite3.connect('R1_TEST.sqlite') #### PROD / TEST #####
     
     cursor = sqliteConnection.cursor()
     logger.info("Successfully Connected to db")
