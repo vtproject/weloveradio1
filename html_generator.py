@@ -146,7 +146,7 @@ logger.addHandler(fh)
 # logger.error('error message')
 # logger.critical('critical message')
 
-connection = sqlite3.connect('R1_TEST.sqlite') #### PROD / TEST #####
+connection = sqlite3.connect('R1_TEST.sqlite') #<----------------------------------------------------------------------------- TEST/PROD
         
 paragraph_count = 0
 
@@ -160,16 +160,16 @@ chart_name = ["za minulý týden", "za minulý měsíc", "za minulých 6 měsíc
 try:
     logger.info("starting html generator") #monitor
     
-    file_tracks = open("html/index.html", "w") #delete previous test file
-    file_artists = open("html/artists.html", "w")
-    file_djs = open("html/djs.html", "w")
+    file_tracks = open("html_T/index.html", "w") #delete previous test file #<----------------------------------------------------------------------------- TEST/PROD
+    file_artists = open("html_T/artists.html", "w") #<----------------------------------------------------------------------------- TEST/PROD
+    file_djs = open("html_T/djs.html", "w") #<----------------------------------------------------------------------------- TEST/PROD
     file_tracks.close()
     file_artists.close()
     file_djs.close()
 
-    file_tracks = open("html/index.html", "a", encoding = "utf-8")
-    file_artists = open("html/artists.html", "a", encoding = "utf-8")
-    file_djs = open("html/djs.html", "a", encoding = "utf-8")
+    file_tracks = open("html_T/index.html", "a", encoding = "utf-8") #<----------------------------------------------------------------------------- TEST/PROD
+    file_artists = open("html_T/artists.html", "a", encoding = "utf-8") #<----------------------------------------------------------------------------- TEST/PROD
+    file_djs = open("html_T/djs.html", "a", encoding = "utf-8") #<----------------------------------------------------------------------------- TEST/PROD
     
     html_header =("""<!DOCTYPE html>
 <html lang="cs">

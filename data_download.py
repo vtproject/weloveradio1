@@ -1,4 +1,5 @@
-database = 'R1_TEST.sqlite'
+database = 'R1_TEST.sqlite' #<----------------------------------------------------------------------------- TEST/PROD
+
 
 ##  CREATE TABLE "playlist" (
 ##	0 "id"	INTEGER,
