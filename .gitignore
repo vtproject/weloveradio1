@@ -1,0 +1,7 @@
+__pycache__/
+html/
+db_backup/
+*.sqlite
+*log
+test.py
+file.txt
