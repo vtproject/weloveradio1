@@ -146,7 +146,7 @@ logger.addHandler(fh)
 # logger.error('error message')
 # logger.critical('critical message')
 
-connection = sqlite3.connect('R1_PROD.db') #### PROD / TEST #####
+connection = sqlite3.connect('R1_TEST.sqlite') #### PROD / TEST #####
         
 paragraph_count = 0
 
