@@ -1,6 +1,8 @@
 __pycache__/
 html/
+html_T/
 db_backup/
+db_backup_T/
 *.sqlite
 *log
 test.py

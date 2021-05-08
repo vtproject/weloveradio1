@@ -1,3 +1,5 @@
+database = 'R1_TEST.sqlite'
+
 ##  CREATE TABLE "playlist" (
 ##	0 "id"	INTEGER,
 ##	1 "raw_tracklist_no"	INTEGER,
@@ -194,7 +196,7 @@ logger.addHandler(fh)
 
 try:
     logger.info("downloading playlists from %s", tracklist_day)
-    sqliteConnection = sqlite3.connect('R1_TEST.sqlite') #### PROD / TEST #####
+    sqliteConnection = sqlite3.connect(database) 
     
     cursor = sqliteConnection.cursor()
     logger.info("Successfully Connected to db")

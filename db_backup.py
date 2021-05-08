@@ -38,13 +38,13 @@ logger.addHandler(fh)
 # logger.error('error message')
 # logger.critical('critical message')    
     
-destination = "db_backup/" + date_out(datetime.datetime.now())
-source = "R1_PROD.sqlite"
+destination = "db_backup_T/" + date_out(datetime.datetime.now())
+source = "R1_TEST.sqlite"
 shutil.copyfile(source, destination)
 logger.info("created: %s > %s", source, destination) 
 
-files = os.listdir("db_backup")
+files = os.listdir("db_backup_T")
 if len(files) == 6: #delete backup threshold
-    del_file = "db_backup/" + min(files)
+    del_file = "db_backup_T/" + min(files)
     os.remove(del_file)
     logger.info("deleted: %s", del_file)
