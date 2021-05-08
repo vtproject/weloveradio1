@@ -39,7 +39,7 @@ logger.addHandler(fh)
 # logger.critical('critical message')    
     
 destination = "db_backup/" + date_out(datetime.datetime.now())
-source = "R1_PROD.db"
+source = "R1_PROD.sqlite"
 shutil.copyfile(source, destination)
 logger.info("created: %s > %s", source, destination) 
 

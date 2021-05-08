@@ -195,7 +195,7 @@ logger.addHandler(fh)
 try:
     logger.info("downloading playlists from %s", tracklist_day)
     sqliteConnection = sqlite3.connect('R1_PROD.sqlite') #### PROD / TEST #####
-    
+
     cursor = sqliteConnection.cursor()
     logger.info("Successfully Connected to db")
     url = "https://www.radio1.cz/program/?date=" + tracklist_day
