@@ -37,8 +37,8 @@ from_file = open("file.txt", "r")
 files = ["artists.html", "djs.html", "index.html"]
 myFTP = ftplib.FTP("ftp.muteme.cz", "muteme", from_file.read())
 
-myFTP.cwd("weloveradio1_T/") #<----------------------------------------------------------------------------- TEST/PROD
-os.chdir('html_T/') #<----------------------------------------------------------------------------- TEST/PROD
+myFTP.cwd("weloveradio1/") #<----------------------------------------------------------------------------- TEST/PROD
+os.chdir('html/') #<----------------------------------------------------------------------------- TEST/PROD
 
 for file in files:
     upload = open(file, "rb")
