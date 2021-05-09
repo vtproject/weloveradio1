@@ -1,6 +1,3 @@
-database = 'R1_TEST.sqlite' #<----------------------------------------------------------------------------- TEST/PROD
-
-
 ##  CREATE TABLE "playlist" (
 ##	0 "id"	INTEGER,
 ##	1 "raw_tracklist_no"	INTEGER,
@@ -195,12 +192,23 @@ logger.addHandler(fh)
 # logger.error('error message')
 # logger.critical('critical message')
 
+#landscape
+landscape_file = open("landscape.switch", "r")
+landscape_switch = landscape_file.read()
+landscape_file.close()
+if landscape_switch == "PROD":
+    landscape_data = ["weloveradio1db_P.sqlite"]
+elif landscape_switch == "TEST":
+    landscape_data = ["weloveradio1db_T.sqlite"]
+else:
+    landscape_data = ["weloveradio1db_D.sqlite"]
+
 try:
     logger.info("downloading playlists from %s", tracklist_day)
-    sqliteConnection = sqlite3.connect(database) 
+    sqliteConnection = sqlite3.connect(landscape_data[0]) 
     
     cursor = sqliteConnection.cursor()
-    logger.info("Successfully Connected to db")
+    logger.info("Successfully Connected to db %s", landscape_data[0])
     url = "https://www.radio1.cz/program/?date=" + tracklist_day
     req = requests.get(url)
     soup = BeautifulSoup(req.content, 'html.parser') 
@@ -292,13 +300,13 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         tracklist_counter += 1 
         
     sqliteConnection.commit()
-    logger.info("new lines commited")
+    logger.info("new lines commited to %s", landscape_data[0])
     cursor.close()
     if sqliteConnection:
         sqliteConnection.close()
-        logger.info("connection closed")
+        logger.info("db %s closed", landscape_data[0])
       
 except sqlite3.Error as error:
-    logger.error(error)
+    logger.error("%s", error)
 
     
