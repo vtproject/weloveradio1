@@ -20,8 +20,8 @@ database = 'R1_PROD.sqlite' #<--------------------------------------------------
 ##	15 "clean_dj_status"	INTEGER,
 
 
-#TODO: doplnit datum o číslo tracklistu, vymazat sloupec artist-title, opravit logování  Jingles
-# bad words in title - ancestral vision 6.5.
+#TODO: 
+# bad words in title - ancestral vision 6.5. - FB & IG
 
 import sqlite3
 from bs4 import BeautifulSoup
