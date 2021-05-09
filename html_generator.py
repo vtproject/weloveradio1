@@ -162,7 +162,7 @@ try:
     
     file_tracks = open("html/index.html", "w") #delete previous test file #<----------------------------------------------------------------------------- TEST/PROD
     file_artists = open("html/artists.html", "w") #<----------------------------------------------------------------------------- TEST/PROD
-    file_djs = open("html_T/djs.html", "w") #<----------------------------------------------------------------------------- TEST/PROD
+    file_djs = open("html/djs.html", "w") #<----------------------------------------------------------------------------- TEST/PROD
     file_tracks.close()
     file_artists.close()
     file_djs.close()
