@@ -146,7 +146,18 @@ logger.addHandler(fh)
 # logger.error('error message')
 # logger.critical('critical message')
 
-connection = sqlite3.connect('R1_PROD.sqlite') #<----------------------------------------------------------------------------- TEST/PROD
+#landscape
+landscape_file = open("landscape.switch", "r")
+landscape_switch = landscape_file.read()
+landscape_file.close()
+if landscape_switch == "PROD":
+    landscape_data = ["weloveradio1db_P.sqlite", "html_P/index.html", "html_P/artists.html", "html_P/djs.html"]
+elif landscape_switch == "TEST":
+    landscape_data = ["weloveradio1db_T.sqlite", "html_T/index.html", "html_T/artists.html", "html_T/djs.html"]
+else:
+    landscape_data = ["weloveradio1db_D.sqlite", "html_D/index.html", "html_D/artists.html", "html_D/djs.html"]
+
+connection = sqlite3.connect(landscape_data[0])
         
 paragraph_count = 0
 
@@ -158,18 +169,18 @@ actual_day = actual_day.days
 days_back = [7, 30, 183, 365, 1825, 3650]
 chart_name = ["za minulý týden", "za minulý měsíc", "za minulých 6 měsíců", "za minulý rok", "za minulých 5 let", "za minulých 10 let"]
 try:
-    logger.info("starting html generator") #monitor
+    logger.info("starting html generator from %s", landscape_data[0]) 
     
-    file_tracks = open("html/index.html", "w") #delete previous test file #<----------------------------------------------------------------------------- TEST/PROD
-    file_artists = open("html/artists.html", "w") #<----------------------------------------------------------------------------- TEST/PROD
-    file_djs = open("html/djs.html", "w") #<----------------------------------------------------------------------------- TEST/PROD
+    file_tracks = open(landscape_data[1], "w") #delete previous test file 
+    file_artists = open(landscape_data[2], "w") 
+    file_djs = open(landscape_data[3], "w") 
     file_tracks.close()
     file_artists.close()
     file_djs.close()
 
-    file_tracks = open("html/index.html", "a", encoding = "utf-8") #<----------------------------------------------------------------------------- TEST/PROD
-    file_artists = open("html/artists.html", "a", encoding = "utf-8") #<----------------------------------------------------------------------------- TEST/PROD
-    file_djs = open("html/djs.html", "a", encoding = "utf-8") #<----------------------------------------------------------------------------- TEST/PROD
+    file_tracks = open(landscape_data[1], "a", encoding = "utf-8")
+    file_artists = open(landscape_data[2], "a", encoding = "utf-8")
+    file_djs = open(landscape_data[3], "a", encoding = "utf-8")
     
     html_header =("""<!DOCTYPE html>
 <html lang="cs">
@@ -380,11 +391,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     file_djs.close()
  
 except sqlite3.Error as error:
-    logger.error("Failed:", error)
+    logger.error("Failed:%s", error)
 finally:
     if connection:
         connection.close()
-        logger.info("all html files generated")
-        logger.info("db closed")
+        logger.info("files %s, %s and %s generated", landscape_data[1], landscape_data[2], landscape_data[3] )
+        logger.info("db %s closed", landscape_data[0])
 
 

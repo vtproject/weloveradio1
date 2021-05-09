@@ -33,17 +33,32 @@ logger.addHandler(fh)
 
 # TODO: ukazatel průběhu
 
+#landscape
+landscape_file = open("landscape.switch", "r")
+landscape_switch = landscape_file.read()
+landscape_file.close()
+if landscape_switch == "PROD":
+    landscape_data = ["weloveradio1/", "html_P/"]
+elif landscape_switch == "TEST":
+    landscape_data = ["weloveradio1_T/", "html_T/"]
+else:
+    landscape_data = ["weloveradio1_D/", "html_D/"]
+
+logger.info("starting upload to ftp.muteme.cz/%s",landscape_data[0])
+
 from_file = open("file.txt", "r")
 files = ["artists.html", "djs.html", "index.html"]
 myFTP = ftplib.FTP("ftp.muteme.cz", "muteme", from_file.read())
 
-myFTP.cwd("weloveradio1/") #<----------------------------------------------------------------------------- TEST/PROD
-os.chdir('html/') #<----------------------------------------------------------------------------- TEST/PROD
-
+myFTP.cwd(landscape_data[0])
+os.chdir(landscape_data[1])
+print("___")
 for file in files:
     upload = open(file, "rb")
     myFTP.storbinary("STOR %s" % file, upload)
     upload.close()
+    print("█", end = "", flush=True) #monitor
+print("\n")
 
-
-logger.info("all html files uploaded to ftp")
+from_file.close()
+logger.info("all html files uploaded to ftp.muteme.cz/%s",landscape_data[0])

@@ -36,15 +36,26 @@ logger.addHandler(fh)
 # logger.info('info message')
 # logger.warning('warn message')
 # logger.error('error message')
-# logger.critical('critical message')    
+# logger.critical('critical message')
+
+#landscape
+landscape_file = open("landscape.switch", "r")
+landscape_switch = landscape_file.read()
+landscape_file.close()
+if landscape_switch == "PROD":
+    landscape_data = ["db_backup_P/", "weloveradio1db_P.sqlite"]
+elif landscape_switch == "TEST":
+    landscape_data = ["db_backup_T/", "weloveradio1db_T.sqlite"]
+else:
+    landscape_data = ["db_backup_D/", "weloveradio1db_D.sqlite"]    
     
-destination = "db_backup/" + date_out(datetime.datetime.now()) #<----------------------------------------------------------------------------- TEST/PROD
-source = "R1_PROD.sqlite" #<----------------------------------------------------------------------------- TEST/PROD
+destination = landscape_data[0] + date_out(datetime.datetime.now())
+source = landscape_data[1]
 shutil.copyfile(source, destination)
 logger.info("created: %s > %s", source, destination) 
 
-files = os.listdir("db_backup") #<----------------------------------------------------------------------------- TEST/PROD
+files = os.listdir(landscape_data[0])
 if len(files) == 6: #delete backup threshold
-    del_file = "db_backup/" + min(files) #<----------------------------------------------------------------------------- TEST/PROD
+    del_file = landscape_data[0] + min(files) 
     os.remove(del_file)
     logger.info("deleted: %s", del_file)
