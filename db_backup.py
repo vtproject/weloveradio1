@@ -43,11 +43,11 @@ landscape_file = open("landscape.switch", "r")
 landscape_switch = landscape_file.read()
 landscape_file.close()
 if landscape_switch == "PROD":
-    landscape_data = ["db_backup_P/", "weloveradio1db_P.sqlite"]
+    landscape_data = ["db_backup_P/", "weloveradio1db_P.sqlite", 6] #delete backup threshold
 elif landscape_switch == "TEST":
-    landscape_data = ["db_backup_T/", "weloveradio1db_T.sqlite"]
+    landscape_data = ["db_backup_T/", "weloveradio1db_T.sqlite", 2]
 else:
-    landscape_data = ["db_backup_D/", "weloveradio1db_D.sqlite"]    
+    landscape_data = ["db_backup_D/", "weloveradio1db_D.sqlite", 2]    
     
 destination = landscape_data[0] + date_out(datetime.datetime.now())
 source = landscape_data[1]
@@ -55,7 +55,7 @@ shutil.copyfile(source, destination)
 logger.info("created: %s > %s", source, destination) 
 
 files = os.listdir(landscape_data[0])
-if len(files) == 6: #delete backup threshold
+if len(files) == landscape_data[2]: #delete backup threshold
     del_file = landscape_data[0] + min(files) 
     os.remove(del_file)
     logger.info("deleted: %s", del_file)
