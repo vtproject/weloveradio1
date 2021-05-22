@@ -74,4 +74,3 @@ else:
     import ftp_upload
 
 logger.info("job done \n-----------------------------------------------------------------------")
-input()
