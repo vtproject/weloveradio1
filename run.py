@@ -33,7 +33,12 @@ logger.addHandler(fh)
 # logger.error('error message')
 # logger.critical('critical message')
 
-logger.info("starting job")
+#landscape
+landscape_file = open("landscape.switch", "r")
+landscape_switch = landscape_file.read()
+landscape_file.close()
+
+logger.info("starting job for %s", landscape_switch)
 date_today = datetime.date.today()
 
 
