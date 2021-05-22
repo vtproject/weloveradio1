@@ -1,3 +1,15 @@
+# TODO:
+# vymazání sloupce artist_title z db:
+# 1) přepsání selectů / DONE 
+# 2) přepsání generování žebříčku / DONE
+# 3) výmaz sloupce z DB / DONE
+# 4) negenerovat sloupec v db / DONE
+# 5) výmaz sloupce v db, VACUUM
+
+# --------
+# - záloha db
+# - auto upload ftp
+
 import sqlite3
 import datetime
 import urllib.parse
@@ -17,22 +29,25 @@ def retrieve_chart_tracks(from_day, to_day, days_back):
    
     cursor.execute("""
     SELECT
-        clean_artist_title, COUNT(clean_artist_title)
+        clean_artist, clean_title, COUNT(clean_title)
     FROM
         playlist
     WHERE clean_status = 1 AND days_from BETWEEN """ + str(from_day) + """ AND """ + str(to_day) + """
     GROUP BY
-        clean_artist_title
+        clean_artist, clean_title
     ORDER BY
-        COUNT(clean_artist_title) DESC,
-        clean_artist_title ASC;
+        COUNT(clean_title) DESC,
+        clean_artist ASC;
     """)
     record = cursor.fetchall()
     chart_list = []
     for chart_row in range(0, 20):
-        chart_item_full = record[chart_row]
-        if chart_item_full[1] < 2:
+        chart_item_artisttitle = record[chart_row]
+        if chart_item_artisttitle[2] < 2:
             chart_item_full = ["-",""]
+        else:
+            artisttitle = chart_item_artisttitle[0] + " - " + chart_item_artisttitle[1]
+            chart_item_full = [artisttitle, chart_item_artisttitle[2]]
         chart_list.append(chart_item_full)
         cursor.close()
     return(chart_list)
@@ -44,16 +59,19 @@ def retrieve_chart_artists(from_day, to_day, days_back):
     to_day = to_day - days_back    
    
     cursor.execute("""
-    SELECT
-        clean_artist, COUNT(clean_artist)
+    SELECT clean_artist, count(clean_artist)
+    FROM   (SELECT
+        clean_artist
     FROM
         playlist
     WHERE clean_status = 1 AND days_from BETWEEN """ + str(from_day) + """ AND """ + str(to_day) + """
     GROUP BY
-        clean_artist
+        clean_artist, raw_tracklist_no)
+    GROUP BY 
+	clean_artist
     ORDER BY
-        COUNT(clean_artist) DESC,
-        clean_artist ASC;
+	COUNT(clean_artist) DESC,
+	clean_artist ASC;
     """)
     record = cursor.fetchall()
     chart_list_tracks = []
@@ -97,22 +115,25 @@ def retrieve_dj_chart(dj, from_day, to_day, days_back):
            
     cursor.execute("""
     SELECT
-        clean_artist_title, COUNT(clean_artist_title)
+        clean_artist, clean_title, COUNT(clean_title)
     FROM
         playlist
     WHERE clean_status = 1 AND clean_tracklist_DJ ='""" + dj + """' AND days_from BETWEEN """ + str(from_day) + """ AND """ + str(to_day) + """
     GROUP BY
-        clean_artist_title
+        clean_artist, clean_title
     ORDER BY
-        COUNT(clean_artist_title) DESC,
-        clean_artist_title ASC;
+        COUNT(clean_title) DESC,
+        clean_artist ASC;
     """)
     record = cursor.fetchall()
     chart_list_tracks = []
     for chart_row in range(0, 20):
-        chart_item_full = record[chart_row]
-        if chart_item_full[1] < 2:
+        chart_item_artisttitle = record[chart_row]
+        if chart_item_artisttitle[2] < 2:
             chart_item_full = ["-",""]
+        else:
+            artisttitle = chart_item_artisttitle[0] + " - " + chart_item_artisttitle[1]
+            chart_item_full = [artisttitle, chart_item_artisttitle[2]]                    
         chart_list_tracks.append(chart_item_full)
         cursor.close()
     return(chart_list_tracks)
@@ -261,7 +282,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         to_day_out = datetime.date(2012, 9, 29) + datetime.timedelta(to_day)
        
         html_list_dates =("""  <div class="w3-third">
-    <h2><b> """+ chart_name[chart_no] + """</b> (""" + date_out(to_day_out) + """ - """ + date_out(from_day_out) + """) </h2>  
+    <h2><b> """+ chart_name[chart_no] + """</b> (""" + date_out(from_day_out) + """ - """ + date_out(to_day_out) + """) </h2>  
       <ol>
 """)
         file_tracks.write(html_list_dates)
