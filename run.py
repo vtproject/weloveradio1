@@ -1,4 +1,8 @@
 import logging
+import date_check
+import datetime
+import random
+import time
 
 #logging
 if __name__ == "__main__":
@@ -30,18 +34,39 @@ logger.addHandler(fh)
 # logger.critical('critical message')
 
 logger.info("starting job")
-import db_backup
-import data_download
+date_today = datetime.date.today()
 
-print("\n data OK? > Enter")
-input()
 
-import html_generator
+import date_check
+import data_download #no run, waiting for function main()
 
-print("\n html OK? > Enter")
-input()
+if date_check.days_diff == 1:
+    logger.info("all available data up to %s downloaded already, data_download NOT STARTED", date_check.last_retrieve_date)
+elif date_check.days_diff < 1:    
+    logger.error("db date mismatch")
+else:    
+    logger.info("NEW data available, last download was %s", date_today - datetime.timedelta(date_check.days_diff))
+    import db_backup
+    logger.info("starting download data from %s to %s", date_today - datetime.timedelta(date_check.days_diff-1), date_today - datetime.timedelta(1))
 
-import ftp_upload
+    for day in range(date_check.days_diff-1, 0, -1):
+        calculated_execute_date = date_today - datetime.timedelta(day)
+        random_wait = random.randrange(2, 6, 1)
+        logger.info("waiting for %s seconds to start download", str(random_wait))
+        time.sleep(random_wait)        
+        data_download.main(calculated_execute_date)
 
-logger.info("job done")
+
+
+    # print("\n data OK? > Enter")
+    # input()
+
+    import html_generator
+
+    # print("\n html OK? > Enter")
+    # input()
+
+    import ftp_upload
+
+logger.info("job done \n-----------------------------------------------------------------------")
 input()
