@@ -9,12 +9,11 @@
 ##	7 "clean_tracklist_dj"	TEXT,
 ##	8 "clean_artist"	TEXT,
 ##	9 "clean_title"	TEXT,
-##	10 "clean_artist_title"	TEXT,
-##	11 "day"	INTEGER,
-##	12 "month"	INTEGER,
-##	13 "year"	INTEGER,
-##	14 "days_from"	INTEGER,
-##	15 "clean_dj_status"	INTEGER,
+##	10 "day"	INTEGER,
+##	11 "month"	INTEGER,
+##	12 "year"	INTEGER,
+##	13 "days_from"	INTEGER,
+##	14 "clean_dj_status"	INTEGER,
 
 
 #TODO: 
@@ -53,7 +52,12 @@ bad_words = ["TRACKLIST",
              "COYS",
              "KOMPILACE",
              "TEA JAY IVO",
-             "REGGAE.CZ"]
+             "REGGAE.CZ",
+             "BANDCAMP",
+             "GMAIL",
+             "FB & IG",
+             "HTTP",
+             "DNEŠNÍ"]
 
 good_words = ["!!!",
               "18+",
@@ -130,7 +134,8 @@ dj_keys = [["BLN","BLN"],
           ["KROPÁČEK", "KAREL KROPÁČEK"],
           ["ŠPONER", "JAKUB ŠPONER, PAVEL VÍT"],
           ["HAMMELOVÁ", "LINDA HAMMELOVÁ"],
-          ["ABU", "ABU"]]  
+          ["ABU", "ABU"]]
+          
   
 jingles = [["TÝC", "LEFTFIELD - Original"],
            ["NEMRAV", "LEFTFIELD - Melt"],   
@@ -138,7 +143,7 @@ jingles = [["TÝC", "LEFTFIELD - Original"],
            ["KAYA", "UB40 - The Dance with the devil"]]
            
 def specials_only(input):
-    if re.search("[^!█ .:▄/*●><=_1234567890-]", input): #pravda pokud obsahuje i něco jiného než spec.
+    if re.search("[^!█ .:▄/*●▶><=_1234567890-]", input): #pravda pokud obsahuje i něco jiného než spec.
         return True
     else:
        for s in good_words:
@@ -251,14 +256,14 @@ def main(execute_date):
                 logger.debug("   No items in tracklist")
                 cursor.execute("""INSERT INTO playlist
          (raw_tracklist_no, raw_tracklist_item_no, raw_tracklist_dj, raw_artist, raw_title,
-         clean_artist, clean_title, clean_artist_title, clean_status, clean_tracklist_dj, clean_dj_status, day, month, year, days_from) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (tracklist_no, 0, dj_name, "no_tracklist", "-", "-", "-", "-", 0, clean_tracklist_dj, clean_dj_status, day, month, year, days_from))
+         clean_artist, clean_title, clean_status, clean_tracklist_dj, clean_dj_status, day, month, year, days_from) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (tracklist_no, 0, dj_name, "no_tracklist", "-", "-", "-", 0, clean_tracklist_dj, clean_dj_status, day, month, year, days_from))
      
             for tracklist_item in tracklist_items:        
                 raw_artist = (tracklist_item.text.split(" - ", 1)[0])
                 raw_title = (tracklist_item.text.split(" - ", 1)[-1])
-                if specials_only(raw_artist) is True and words(raw_artist) is True and artist_equal_title(raw_artist, raw_title) is True:
+                if specials_only(raw_artist) is True and words(raw_artist) is True and words(raw_title) is True and artist_equal_title(raw_artist, raw_title) is True:
                     clean_status = 1
                     artist = raw_artist.replace("\"","\'")
                     artist = artist.replace("· ","") #vymaznání bulletu na začátku
@@ -277,21 +282,19 @@ def main(execute_date):
                             clean_status = 0
                             artist = "-"
                             title = "-"
-                            artist_title = "-"
                             logger.debug(" X %s %s %s", tracklist_item_nr, raw_artist, raw_title)
                                                    
                 else:
                     clean_status = 0
                     artist = "-"
                     title = "-"
-                    artist_title = "-"
                     logger.debug(" X %s %s %s", tracklist_item_nr, raw_artist, raw_title)
                   
                 cursor.execute("""INSERT INTO playlist
          (raw_tracklist_no, raw_tracklist_item_no, raw_tracklist_dj, raw_artist, raw_title,
-         clean_artist, clean_title, clean_artist_title, clean_status, clean_tracklist_dj, clean_dj_status, day, month, year, days_from) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (tracklist_no, tracklist_item_nr, dj_name, raw_artist, raw_title, artist, title, artist_title, clean_status, clean_tracklist_dj, clean_dj_status, day, month, year, days_from))
+         clean_artist, clean_title, clean_status, clean_tracklist_dj, clean_dj_status, day, month, year, days_from) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (tracklist_no, tracklist_item_nr, dj_name, raw_artist, raw_title, artist, title, clean_status, clean_tracklist_dj, clean_dj_status, day, month, year, days_from))
                        
                 tracklist_item_nr += 1
             tracklist_counter += 1 
