@@ -48,7 +48,7 @@ cursor.execute("""SELECT * FROM playlist ORDER BY id DESC LIMIT 1""")
 record = cursor.fetchone()
 
 date_today = datetime.date.today()
-last_retrieve_date = datetime.date(record[13], record[12], record[11])
+last_retrieve_date = datetime.date(record[12], record[11], record[10])
 days_diff = date_today - last_retrieve_date
 days_diff = days_diff.days
 
