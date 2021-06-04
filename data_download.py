@@ -205,6 +205,7 @@ else:
 
 def main(execute_date):
     tracklist_day = str(execute_date)
+    check_consistency_list = []
     try:
         logger.info("downloading playlists from day %s", tracklist_day)
         sqliteConnection = sqlite3.connect(landscape_data[0]) 
@@ -235,6 +236,7 @@ def main(execute_date):
             dj_name = dj_name.text
             dj_name_upper = dj_name.upper()
             tracklist_item_nr = 1
+            check_consistency_table_row = 1
             tracklist_no = tracklist_day + "_" + str(tracklist_counter)
             
             for dj_key in dj_keys:
@@ -259,6 +261,8 @@ def main(execute_date):
          clean_artist, clean_title, clean_status, clean_tracklist_dj, clean_dj_status, day, month, year, days_from) 
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (tracklist_no, 0, dj_name, "no_tracklist", "-", "-", "-", 0, clean_tracklist_dj, clean_dj_status, day, month, year, days_from))
+    
+                check_consistency_list = [tracklist_no, 0, dj_name, "no_tracklist", "-", "-", "-"]
      
             for tracklist_item in tracklist_items:        
                 raw_artist = (tracklist_item.text.split(" - ", 1)[0])
@@ -295,7 +299,11 @@ def main(execute_date):
          clean_artist, clean_title, clean_status, clean_tracklist_dj, clean_dj_status, day, month, year, days_from) 
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (tracklist_no, tracklist_item_nr, dj_name, raw_artist, raw_title, artist, title, clean_status, clean_tracklist_dj, clean_dj_status, day, month, year, days_from))
-                       
+                
+                check_consistency_list = [tracklist_no, tracklist_item_nr, dj_name, raw_artist, raw_title]
+                print(check_consistency_table_row, check_consistency_list) 
+                
+                check_consistency_table_row += 1
                 tracklist_item_nr += 1
             tracklist_counter += 1 
             
@@ -308,5 +316,8 @@ def main(execute_date):
           
     except sqlite3.Error as error:
         logger.error("%s", error)
+        
+    print(check_consistency_list)
+    input()    
 
     
