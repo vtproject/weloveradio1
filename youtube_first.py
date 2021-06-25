@@ -1,16 +1,19 @@
 from bs4 import BeautifulSoup
 import requests
 import re
+import datetime
 
-artisttitle = "TV ON THE RADIO - Happy Idiot"
-url = "https://www.youtube.com/results?search_query=TV+ON+THE+RADIO+-+Happy+Idiot"
+date_today = datetime.datetime.strptime(str(datetime.date.today()), '%Y-%m-%d').strftime('%Y%m%d')
+cookie_consent = "YES+cb." + date_today + "-19-p0.en+FX+961"
+artisttitle = "YVES TUMOR - Jackie"
+url = "https://www.youtube.com/results?search_query=YVES+TUMOR+-+Jackie"
 
 HEADERS = ({'User-Agent':
             'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 \
             (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36',\
             'Accept-Language': 'en-US, en;q=0.5'})
 
-req = requests.get(url,  headers=HEADERS, cookies={'CONSENT': 'YES+cb.20210530-19-p0.en+FX+961'} )
+req = requests.get(url,  headers=HEADERS, cookies={'CONSENT': cookie_consent} )
 soup = BeautifulSoup(req.content, 'html.parser') 
 
 text = str(soup)

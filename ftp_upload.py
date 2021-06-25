@@ -52,12 +52,23 @@ myFTP = ftplib.FTP("ftp.muteme.cz", "muteme", from_file.read())
 
 myFTP.cwd(landscape_data[0])
 os.chdir(landscape_data[1])
-print("___")
+print("_________")
 for file in files:
     upload = open(file, "rb")
     myFTP.storbinary("STOR %s" % file, upload)
     upload.close()
-    print("█", end = "", flush=True) #monitor
+    print("█", end = "", flush=True) #monitor 
+
+
+for detail_number_1 in range(1, 7):
+    for detail_number_2 in range (1, 21):
+        detail_name = str(detail_number_1).zfill(2) + "_" + str(detail_number_2).zfill(2)
+        file = "track_detail_" + detail_name + ".html"
+        upload = open(file, "rb")        
+        myFTP.storbinary("STOR %s" % file, upload)
+        upload.close()
+    print("█", end = "", flush=True) #monitor    
+    
 print("\n")
 
 from_file.close()

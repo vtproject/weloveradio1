@@ -15,6 +15,8 @@ import datetime
 import urllib.parse
 import re
 import logging
+import html_detail_generator
+import cover_download
 
 def date_out(datum):
     date_out_f = str(datum)
@@ -47,7 +49,7 @@ def retrieve_chart_tracks(from_day, to_day, days_back):
             chart_item_full = ["-",""]
         else:
             artisttitle = chart_item_artisttitle[0] + " - " + chart_item_artisttitle[1]
-            chart_item_full = [artisttitle, chart_item_artisttitle[2]]
+            chart_item_full = [artisttitle, chart_item_artisttitle[2], chart_item_artisttitle[0], chart_item_artisttitle[1]]
         chart_list.append(chart_item_full)
         cursor.close()
     return(chart_list)
@@ -270,6 +272,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     
     print("_______________________________________________________________________") #progress bar
     
+    detail_number_1 = 1
+        
     for chart_no in range(0,6):            
         if actual_day - days_back[chart_no] < 1:
             from_day = 0
@@ -293,8 +297,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         
         chart_list_artists = retrieve_chart_artists(from_day, to_day, 0)
         chart_list_artists_last = retrieve_chart_artists(from_day, to_day, 1)        
-       
-        for item in range(0, 20):           
+        detail_number_2 = 1
+        for item in range(0, 20): 
+
+###########################################################generate index.html  
+        
             if chart_list_tracks[item][0] == "-":
                 html_list_tracks = '        <li>-</li>\n' 
             else:
@@ -308,10 +315,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         else:
                             arrow = "&nbsp;&nbsp;"
                         break    
+                detail_file_number = str(detail_number_1).zfill(2) + "_" + str(detail_number_2).zfill(2)                 
+                
+                html_list_tracks = '        <li><span style="color:red">' + arrow +  '</span><a href = "track_detail_' + detail_file_number + '.html">' + chart_list_tracks[item][0] + '</a> (' + str(chart_list_tracks[item][1]) + ')</li>\n'
+                
+                html_detail_generator.main(str(chart_list_tracks[item][2]), str(chart_list_tracks[item][3]),detail_file_number,7)
+                detail_number_2 += 1
+                
+                # cover_download.main(chart_list_tracks[item][0])
+                
+            file_tracks.write(html_list_tracks)
             
-                html_list_tracks = '        <li><span style="color:red">' + arrow +  '</span><a href = "https://www.youtube.com/results?search_query=' + urllib.parse.quote_plus(chart_list_tracks[item][0]) + '" target="_blank">' + chart_list_tracks[item][0] + '</a> (' + str(chart_list_tracks[item][1]) + ')</li>\n'
-            file_tracks.write(html_list_tracks)                       
-        
+###########################################################generate artists.html             
+
             if chart_list_artists[item][0] == "-":
                 html_list_artists = '        <li>-</li>\n' 
             else:
@@ -327,9 +343,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         break    
                 html_list_artists = '        <li><span style="color:red">' + arrow +  '</span><a href = "https://www.discogs.com/search/?q=' + urllib.parse.quote_plus(chart_list_artists[item][0]) + '" target="_blank">' + chart_list_artists[item][0] + '</a> (' + str(chart_list_artists[item][1]) + ')</li>\n'
             file_artists.write(html_list_artists)
-        
-        
-        paragraph_count = paragraph_count + 1
+            
+        detail_number_1 += 1
+        paragraph_count += 1
 
         if paragraph_count == 3: 
             html_break1 = ("""     </ol>
@@ -397,7 +413,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         break    
                 html_list_tracks = '        <li><span style="color:red">' + arrow +  '</span><a href = "https://www.youtube.com/results?search_query=' + urllib.parse.quote_plus(chart_list_tracks[item][0]) + '" target="_blank">' + chart_list_tracks[item][0] + '</a> (' + str(chart_list_tracks[item][1]) + ')</li>\n'
             file_djs.write(html_list_tracks)
-        paragraph_count = paragraph_count + 1
+          
+        paragraph_count += 1
 
         if paragraph_count % 3 == 0:
             file_djs.write(html_break1)
