@@ -1,6 +1,3 @@
-# todo
-# - leading zeros html_detail
-
 import sqlite3
 import datetime
 import urllib.parse
@@ -131,14 +128,16 @@ def main(artist, title, detail_name, days_back):
         html_track_info =("""<b>""" + artist + """ - """ + title + """</b>:<BR><BR>""")
 
         artisttitle = artist + " - " + title
-        pic_name = artisttitle.replace(" ","_")
-        saved_image = "covers/" + pic_name +".jpg"
-          
-        html_track_cover =('<img src="' + saved_image + '" width="288" height="162"><BR>\n')        
+        
+        import youtube_embed
+        
+        target_part = youtube_embed.main(artisttitle)
+           
+        html_youtube_embed = '<iframe width="560" height="315" src="https://www.youtube.com/embed/' + target_part + '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> <BR>'        
                 
         file_details.write(html_header)
         file_details.write(html_menu_details)
-        file_details.write(html_track_cover)
+        file_details.write(html_youtube_embed)
         file_details.write(html_track_info)
 
         
@@ -160,11 +159,11 @@ def main(artist, title, detail_name, days_back):
     </html>""") 
         file_details.write(html_end)
         file_details.close()
+        
+        print("█", end = "", flush=True) #monitor 
 
      
     except sqlite3.Error as error:
         logger.error("Failed:%s", error)
-
-
 
 

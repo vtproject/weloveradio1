@@ -43,6 +43,7 @@ def retrieve_chart_tracks(from_day, to_day, days_back):
     """)
     record = cursor.fetchall()
     chart_list = []
+          
     for chart_row in range(0, 20):
         chart_item_artisttitle = record[chart_row]
         if chart_item_artisttitle[2] < 2:

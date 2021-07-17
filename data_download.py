@@ -318,6 +318,6 @@ def main(execute_date):
         logger.error("%s", error)
         
     # print(check_consistency_list)
-    input()    
+     
 
     
