@@ -271,11 +271,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     file_djs.write(html_header)
     file_djs.write(html_menu_djs)
     
-    print("_______________________________________________________________________") #progress bar
-    
+    print("      ____________________") #progress bar
+        
     detail_number_1 = 1
         
     for chart_no in range(0,6):            
+        
+        chart_no_monitor = chart_no + 1
+        print("%s/6 > " % chart_no_monitor, end = "", flush=True) #monitor
+        
         if actual_day - days_back[chart_no] < 1:
             from_day = 0
         else:
@@ -299,10 +303,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         chart_list_artists = retrieve_chart_artists(from_day, to_day, 0)
         chart_list_artists_last = retrieve_chart_artists(from_day, to_day, 1)        
         detail_number_2 = 1
-        for item in range(0, 20): 
 
-###########################################################generate index.html  
-        
+###########################################################generate index.html          
+        for item in range(0, 20):
+            print("█", end = "", flush=True) #monitor 
+            
             if chart_list_tracks[item][0] == "-":
                 html_list_tracks = '        <li>-</li>\n' 
             else:
@@ -325,7 +330,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 
                 # cover_download.main(chart_list_tracks[item][0])
                 
-            file_tracks.write(html_list_tracks)
+            file_tracks.write(html_list_tracks)            
             
 ###########################################################generate artists.html             
 
@@ -347,7 +352,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             
         detail_number_1 += 1
         paragraph_count += 1
-
+        
+        print("")
+        
         if paragraph_count == 3: 
             html_break1 = ("""     </ol>
   </div>
@@ -363,7 +370,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             file_tracks.write(html_break2)
             file_artists.write(html_break2)
             
-        print("█", end = "", flush=True) #monitor 
+            
         
     html_end = ("""</div>
 <div class="w3-container w3-red">
@@ -387,6 +394,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     paragraph_count = 0
     dj_count = 0
     
+    print("____________________") #progress bar
+
     retrieve_djs(from_day, to_day)
     for dj in djs_lst:
        

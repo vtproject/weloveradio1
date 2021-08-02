@@ -122,10 +122,11 @@ def main(artist, title, detail_name, days_back):
       <h4>| <a href = "index.html"><U>nejhranější skladby</U></a> |&nbsp;<a href = "artists.html"><U>nejhranější&nbsp;skupiny</U></a>&nbsp;|<br>
     | <a href = "djs.html"><U>žebříčky podle moderátorů</U></a> |</h4> 
     </div>
-    <div class="w3-row-padding">
+    <div class="w3-container"  style="max-width:600px">
+    <div class="video-container">
     """)
     
-        html_track_info =("""<b>""" + artist + """ - """ + title + """</b>:<BR><BR>""")
+        html_track_info =("""<b>""" + artist + """ - """ + title + """</b>:<br><br>\n""")
 
         artisttitle = artist + " - " + title
         
@@ -133,7 +134,7 @@ def main(artist, title, detail_name, days_back):
         
         target_part = youtube_embed.main(artisttitle)
            
-        html_youtube_embed = '<iframe width="560" height="315" src="https://www.youtube.com/embed/' + target_part + '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> <BR>'        
+        html_youtube_embed = '<iframe src="https://www.youtube.com/embed/' + target_part + '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> </div> <br>\n'        
                 
         file_details.write(html_header)
         file_details.write(html_menu_details)
@@ -146,23 +147,19 @@ def main(artist, title, detail_name, days_back):
                 dj = "Neznámý DJ"
             else:
                 dj = str(detail_row[0])
-            detail_row_out = str(detail_row[1]) + "." + str(detail_row[2]) + "." + str(detail_row[3]) + " : " + dj + "<BR>"
+            detail_row_out = str(detail_row[1]) + "." + str(detail_row[2]) + "." + str(detail_row[3]) + " : " + dj + "<br>\n"
             file_details.write(detail_row_out)
            
      
             
         html_end = ("""</div>
-    <div class="w3-container w3-red">
-      <br>
-    </div>
+       <br>
+       <br>
     </body>
     </html>""") 
         file_details.write(html_end)
         file_details.close()
         
-        print("█", end = "", flush=True) #monitor 
-
-     
     except sqlite3.Error as error:
         logger.error("Failed:%s", error)
 

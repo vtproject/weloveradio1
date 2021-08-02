@@ -314,7 +314,7 @@ def main(execute_date):
             sqliteConnection.close()
             logger.info("db %s closed", landscape_data[0])
           
-    except sqlite3.Error as error:
+    except (requests.exceptions.RequestException, sqlite3.Error)  as error:     
         logger.error("%s", error)
         
     # print(check_consistency_list)

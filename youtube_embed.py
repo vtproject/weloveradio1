@@ -63,6 +63,7 @@ def main(artisttitle):
     text = str(soup)
     texts = text.split("/watch?v=")
     target_part = texts[1].split('","webPageType"')
-       
+    
+      
     return target_part[0]
     
