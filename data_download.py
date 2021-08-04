@@ -215,9 +215,7 @@ def main(execute_date):
         url = "https://www.radio1.cz/program/?date=" + tracklist_day
         req = requests.get(url)
         soup = BeautifulSoup(req.content, 'html.parser') 
-        
         pgm_day = soup.find("div", class_="flex flex-column mr-calc scroller-active")
-        
         day_raw_ls = tracklist_day.split("-") 
         day = int(day_raw_ls[2])
         month = int(day_raw_ls[1])
@@ -232,7 +230,7 @@ def main(execute_date):
         tracklist_counter = 1
 
         for tracklist in tracklists:
-            dj_name = tracklist.find_previous("h4", class_="h4 caps strong")
+            dj_name = tracklist.find_previous("h4", class_="px2 h4 caps strong")
             dj_name = dj_name.text
             dj_name_upper = dj_name.upper()
             tracklist_item_nr = 1
@@ -318,6 +316,8 @@ def main(execute_date):
         logger.error("%s", error)
         
     # print(check_consistency_list)
+    
+
      
 
     
