@@ -126,7 +126,7 @@ def main(artist, title, detail_name, days_back):
     <div class="video-container">
     """)
     
-        html_track_info =("""<b>""" + artist + """ - """ + title + """</b>:<br><br>\n""")
+        html_track_info =("""Skladbu <b>""" + artist + """ - """ + title + """</b> hráli:<br><br>\n""")
 
         artisttitle = artist + " - " + title
         
@@ -145,9 +145,11 @@ def main(artist, title, detail_name, days_back):
         for detail_row in record:
             if detail_row[0] is None:
                 dj = "Neznámý DJ"
+            elif detail_row[0] is "-":
+                dj = "Neznámý DJ"
             else:
                 dj = str(detail_row[0])
-            detail_row_out = str(detail_row[1]) + "." + str(detail_row[2]) + "." + str(detail_row[3]) + " : " + dj + "<br>\n"
+            detail_row_out = str(detail_row[1]).zfill(2) + "." + str(detail_row[2]).zfill(2) + "." + str(detail_row[3]) + " : " + dj + "<br>\n"
             file_details.write(detail_row_out)
            
      

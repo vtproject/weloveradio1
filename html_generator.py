@@ -394,7 +394,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     paragraph_count = 0
     dj_count = 0
     
-    print("____________________") #progress bar
+    print("_________________________________________________________") #progress bar
 
     retrieve_djs(from_day, to_day)
     for dj in djs_lst:
