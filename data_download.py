@@ -231,7 +231,7 @@ def main(execute_date):
         tracklist_counter = 1
 
         for tracklist in tracklists:
-            dj_name = tracklist.find_previous("h4", class_="h4 caps strong")
+            dj_name = tracklist.find_previous("h4", class_="px2 h4 caps strong")
             dj_name = dj_name.text
             dj_name_upper = dj_name.upper()
             tracklist_item_nr = 1
