@@ -163,7 +163,7 @@ def main(artist, title, detail_name, days_back, chart_period):
         target_part = youtube_embed.main(artisttitle)
         # target_part = "bXrc7w0Yffg" # pro testování - nespouští se youtube scrap
         
-        html_youtube_embed = '<div class="video-container"><iframe src="https://www.youtube.com/embed/' + target_part + '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> </div> <br>\n'        
+        html_youtube_embed = '<div class="video-container"><iframe src="https://www.youtube.com/embed/' + target_part + '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"></iframe> </div> <br>\n'        
                 
         file_details.write(html_header)
         file_details.write(html_menu_details)

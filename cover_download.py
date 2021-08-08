@@ -5,6 +5,7 @@ import datetime
 import logging
 import urllib.parse
 import os.path
+import ftplib
 
 #logging
 if __name__ == "__main__":
@@ -41,11 +42,11 @@ landscape_file = open("landscape.switch", "r")
 landscape_switch = landscape_file.read()
 landscape_file.close()
 if landscape_switch == "PROD":
-    landscape_data = "html_P/covers/"
+    landscape_data = ["weloveradio1/covers/", "html_P/covers"]
 elif landscape_switch == "TEST":
-    landscape_data = "html_T/covers/"
+    landscape_data = ["weloveradio1_T/covers/", "html_T/covers/"]
 else:
-    landscape_data = "html_D/covers/"
+    landscape_data = ["weloveradio1_D/covers", "html_D/covers/"]
 
 
 
@@ -60,9 +61,11 @@ def main(artisttitle):
                 'Accept-Language': 'en-US, en;q=0.5'})
     
     pic_name = artisttitle.replace(" ","_")
-    save_image = landscape_data + pic_name +".jpg"    
+    save_image = pic_name +".jpg" 
+    save_image_path = landscape_data[1] + pic_name +".jpg"    
+    from_file = open("file.txt", "r")
     
-    if os.path.isfile(save_image) is False:
+    if os.path.isfile(save_image_path) is False:
         req = requests.get(url,  headers=HEADERS, cookies={'CONSENT': cookie_consent} )
         soup = BeautifulSoup(req.content, 'html.parser') 
 
@@ -72,8 +75,16 @@ def main(artisttitle):
         web_image = "https://i.ytimg.com/vi/" + target_part[0]
         
         response = requests.get(web_image)
-        file = open(save_image, "wb")
+        file = open(save_image_path, "wb")
         file.write(response.content)
         file.close()
+        
+        myFTP = ftplib.FTP("ftp.muteme.cz", "muteme", from_file.read())
+        myFTP.cwd(landscape_data[0])
+        # os.chdir(landscape_data[1])
+
+        upload = open(save_image_path, "rb")
+        myFTP.storbinary("STOR %s" % save_image, upload)
+        upload.close()
     
     return pic_name
