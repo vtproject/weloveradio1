@@ -1,15 +1,3 @@
-# TODO:
-# vymazání sloupce artist_title z db:
-# 1) přepsání selectů / DONE 
-# 2) přepsání generování žebříčku / DONE
-# 3) výmaz sloupce z DB / DONE
-# 4) negenerovat sloupec v db / DONE
-# 5) výmaz sloupce v db, VACUUM
-
-# --------
-# - záloha db
-# - auto upload ftp
-
 import sqlite3
 import datetime
 import urllib.parse
@@ -192,8 +180,9 @@ actual_day = execute_date - datetime.date(2012, 9, 29)
 actual_day = actual_day.days
 days_back = [7, 30, 183, 365, 1825, 3650]
 chart_name = ["za minulý týden", "za minulý měsíc", "za minulých 6 měsíců", "za minulý rok", "za minulých 5 let", "za minulých 10 let"]
+chart_period = ["v minulém týdnu", "v minulém měsíci", "v minulých 6 měsících", "v minulém roce", "v minulých 5 letech", "v minulých 10 letech"]
 try:
-    logger.info("starting html generator from %s", landscape_data[0]) 
+    logger.info("starting tracks, details and artists html generator from %s", landscape_data[0]) 
     
     file_tracks = open(landscape_data[1], "w") #delete previous test file 
     file_artists = open(landscape_data[2], "w") 
@@ -292,7 +281,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
        
         html_list_dates =("""  <div class="w3-third">
     <h2><b> """+ chart_name[chart_no] + """</b> (""" + date_out(from_day_out) + """ - """ + date_out(to_day_out) + """) </h2>  
-      <ol>
 """)
         file_tracks.write(html_list_dates)
         file_artists.write(html_list_dates)
@@ -304,7 +292,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         chart_list_artists_last = retrieve_chart_artists(from_day, to_day, 1)        
         detail_number_2 = 1
 
-###########################################################generate index.html          
+###########################################################generate index.html
         for item in range(0, 20):
             print("█", end = "", flush=True) #monitor 
             
@@ -324,13 +312,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 detail_file_number = str(detail_number_1).zfill(2) + "_" + str(detail_number_2).zfill(2)                 
                 
                 html_list_tracks = '        <li><span style="color:red">' + arrow +  '</span><a href = "track_detail_' + detail_file_number + '.html">' + chart_list_tracks[item][0] + '</a> (' + str(chart_list_tracks[item][1]) + ')</li>\n'
-                
-                html_detail_generator.main(str(chart_list_tracks[item][2]), str(chart_list_tracks[item][3]),detail_file_number,7)
+                html_list_tracks_bold = '        <li><span style="color:red">' + arrow +  '</span><a href = "track_detail_' + detail_file_number + '.html"><b>' + chart_list_tracks[item][0] + '</b></a> (' + str(chart_list_tracks[item][1]) + ')</li>\n'
+
+                html_detail_generator.main(str(chart_list_tracks[item][2]), str(chart_list_tracks[item][3]),detail_file_number,days_back[chart_no],chart_period[chart_no])
                 detail_number_2 += 1
                 
-                # cover_download.main(chart_list_tracks[item][0])
-                
-            file_tracks.write(html_list_tracks)            
+            if item == 0:
+                html_cover = """&nbsp;&nbsp;<a href = "track_detail_""" + detail_file_number + """.html"><img src="covers/""" + cover_download.main(chart_list_tracks[0][0]) + """.jpg" width="288" height="162"></a>
+     <ol>
+     """
+                file_tracks.write(html_cover)
+                file_tracks.write(html_list_tracks_bold)    
+            else:
+                file_tracks.write(html_list_tracks)            
             
 ###########################################################generate artists.html             
 
@@ -394,7 +388,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     paragraph_count = 0
     dj_count = 0
     
-    print("_________________________________________________________") #progress bar
+    print("")
+    logger.info("starting djs generator from %s", landscape_data[0]) 
+    print("_________________________________________________________________") #progress bar
 
     retrieve_djs(from_day, to_day)
     for dj in djs_lst:

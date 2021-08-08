@@ -4,6 +4,7 @@ import re
 import datetime
 import logging
 import urllib.parse
+import os.path
 
 #logging
 if __name__ == "__main__":
@@ -57,19 +58,22 @@ def main(artisttitle):
                 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 \
                 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36',\
                 'Accept-Language': 'en-US, en;q=0.5'})
-    req = requests.get(url,  headers=HEADERS, cookies={'CONSENT': cookie_consent} )
-    soup = BeautifulSoup(req.content, 'html.parser') 
-
-    text = str(soup)
-    texts = text.split("https://i.ytimg.com/vi/")
-    target_part = texts[1].split('","width":360,"height":202}')
-
-    web_image = "https://i.ytimg.com/vi/" + target_part[0]
+    
     pic_name = artisttitle.replace(" ","_")
-    save_image = landscape_data + pic_name +".jpg"
+    save_image = landscape_data + pic_name +".jpg"    
+    
+    if os.path.isfile(save_image) is False:
+        req = requests.get(url,  headers=HEADERS, cookies={'CONSENT': cookie_consent} )
+        soup = BeautifulSoup(req.content, 'html.parser') 
 
-    response = requests.get(web_image)
-    file = open(save_image, "wb")
-    file.write(response.content)
-    file.close()
-
+        text = str(soup)
+        texts = text.split("https://i.ytimg.com/vi/")
+        target_part = texts[1].split('","width":360,"height":202}')
+        web_image = "https://i.ytimg.com/vi/" + target_part[0]
+        
+        response = requests.get(web_image)
+        file = open(save_image, "wb")
+        file.write(response.content)
+        file.close()
+    
+    return pic_name

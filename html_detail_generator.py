@@ -52,11 +52,35 @@ else:
     landscape_data = ["weloveradio1db_D.sqlite", "html_D/"]
 
 connection = sqlite3.connect(landscape_data[0])
+
 update_date = datetime.date.today()  # Datum generování datetime.date(2021, 4, 3)  datetime.date.today() 
+execute_date = update_date - datetime.timedelta(1) # Datum generování html  
+actual_day = execute_date - datetime.date(2012, 9, 29)
+actual_day = actual_day.days
 
-
-def main(artist, title, detail_name, days_back):        
+def main(artist, title, detail_name, days_back, chart_period):        
     try:
+        to_day = actual_day
+        from_day = actual_day - days_back
+        
+        cursor = connection.cursor()
+        cursor.execute("""
+        SELECT
+            clean_tracklist_dj, day, month, year
+        FROM
+            playlist
+        WHERE clean_artist = '""" + artist + """' AND clean_title = '""" + title + """' AND days_from BETWEEN """ + str(from_day) + """ AND """ + str(to_day) + """ 
+        ORDER BY
+            year DESC,
+            month DESC,
+            day DESC;
+        """)
+        
+        record = cursor.fetchall()
+        cursor.close()
+        
+        to_day = actual_day - days_back - 1
+        from_day = 0
 
         cursor = connection.cursor()
         cursor.execute("""
@@ -64,16 +88,16 @@ def main(artist, title, detail_name, days_back):
             clean_tracklist_dj, day, month, year
         FROM
             playlist
-        WHERE clean_artist = '""" + artist + """' AND clean_title = '""" + title + """' 
+        WHERE clean_artist = '""" + artist + """' AND clean_title = '""" + title + """' AND days_from BETWEEN """ + str(from_day) + """ AND """ + str(to_day) + """ 
         ORDER BY
             year DESC,
             month DESC,
             day DESC;
         """)
-        record = cursor.fetchall()
+        
+        record_past_list = cursor.fetchall()
         cursor.close()
-
-
+        
         # logger.info("starting html generator from %s", landscape_data[0]) 
         
         file_name = landscape_data[1] + "track_detail_" + detail_name + ".html"
@@ -120,24 +144,30 @@ def main(artist, title, detail_name, days_back):
 
         html_menu_details =("""<div class="w3-container">
       <h4>| <a href = "index.html"><U>nejhranější skladby</U></a> |&nbsp;<a href = "artists.html"><U>nejhranější&nbsp;skupiny</U></a>&nbsp;|<br>
-    | <a href = "djs.html"><U>žebříčky podle moderátorů</U></a> |</h4> 
+    | <a href = "djs.html"><U>žebříčky podle moderátorů</U></a> |&nbsp;<br>
+    <br>
+    <a href = "index.html">&#60; <U>zpět na nehranější skladby</U><br><br></a></h4> 
     </div>
     <div class="w3-container"  style="max-width:600px">
-    <div class="video-container">
     """)
     
-        html_track_info =("""Skladbu <b>""" + artist + """ - """ + title + """</b> hráli:<br><br>\n""")
+        html_track_title =("""Detail skladby <b>""" + artist + """ - """ + title + """</b>:<br><br>\n""")
+        html_track_info =("""Skladbu hráli <b>""" + chart_period + """</b>:<br><br>\n""")
+        html_past_list_info = ("""<br>Před tímto obdobím skladbu hráli:<br><br>\n""")
+        html_nikdo = ("""<br>Před tímto obdobím ještě nikdo skladbu nehrál.<br><br>\n""")
 
         artisttitle = artist + " - " + title
         
         import youtube_embed
         
         target_part = youtube_embed.main(artisttitle)
-           
-        html_youtube_embed = '<iframe src="https://www.youtube.com/embed/' + target_part + '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> </div> <br>\n'        
+        # target_part = "bXrc7w0Yffg" # pro testování - nespouští se youtube scrap
+        
+        html_youtube_embed = '<div class="video-container"><iframe src="https://www.youtube.com/embed/' + target_part + '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> </div> <br>\n'        
                 
         file_details.write(html_header)
         file_details.write(html_menu_details)
+        file_details.write(html_track_title)
         file_details.write(html_youtube_embed)
         file_details.write(html_track_info)
 
@@ -145,13 +175,28 @@ def main(artist, title, detail_name, days_back):
         for detail_row in record:
             if detail_row[0] is None:
                 dj = "Neznámý DJ"
-            elif detail_row[0] is "-":
+            elif detail_row[0] == "-":
                 dj = "Neznámý DJ"
             else:
                 dj = str(detail_row[0])
             detail_row_out = str(detail_row[1]).zfill(2) + "." + str(detail_row[2]).zfill(2) + "." + str(detail_row[3]) + " : " + dj + "<br>\n"
             file_details.write(detail_row_out)
-           
+
+        if days_back != 3650:
+            if not record_past_list:
+                file_details.write(html_nikdo)
+            else:
+                file_details.write(html_past_list_info) 
+                
+                for detail_row in record_past_list:
+                    if detail_row[0] is None:
+                        dj = "Neznámý DJ"
+                    elif detail_row[0] == "-":
+                        dj = "Neznámý DJ"
+                    else:
+                        dj = str(detail_row[0])
+                    detail_row_out = str(detail_row[1]).zfill(2) + "." + str(detail_row[2]).zfill(2) + "." + str(detail_row[3]) + " : " + dj + "<br>\n"
+                    file_details.write(detail_row_out)
      
             
         html_end = ("""</div>
