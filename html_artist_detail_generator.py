@@ -58,7 +58,7 @@ execute_date = update_date - datetime.timedelta(1) # Datum generování html
 actual_day = execute_date - datetime.date(2012, 9, 29)
 actual_day = actual_day.days
 
-def main(artist, title, detail_name, days_back, chart_period):        
+def main(artist, detail_name, days_back, chart_period):        
     try:
         to_day = actual_day
         from_day = actual_day - days_back
@@ -66,15 +66,15 @@ def main(artist, title, detail_name, days_back, chart_period):
         cursor = connection.cursor()
         cursor.execute("""
         SELECT
-            clean_tracklist_dj, day, month, year
+            clean_tracklist_dj, day, month, year, clean_title
         FROM
             playlist
-        WHERE clean_artist = ? AND clean_title = ? AND days_from BETWEEN ? AND ? 
+        WHERE clean_artist = ? AND days_from BETWEEN ? AND ? 
         ORDER BY
             year DESC,
             month DESC,
             day DESC;
-        """, (artist, title, str(from_day),str(to_day)))
+        """, (artist, str(from_day),str(to_day)))
         
         record = cursor.fetchall()
         cursor.close()
@@ -85,22 +85,22 @@ def main(artist, title, detail_name, days_back, chart_period):
         cursor = connection.cursor()
         cursor.execute("""
         SELECT
-            clean_tracklist_dj, day, month, year
+            clean_tracklist_dj, day, month, year, clean_title
         FROM
             playlist
-        WHERE clean_artist = ? AND clean_title = ? AND days_from BETWEEN ? AND ? 
+        WHERE clean_artist = ? AND days_from BETWEEN ? AND ? 
         ORDER BY
             year DESC,
             month DESC,
             day DESC;
-        """, (artist, title, str(from_day),str(to_day)))
+        """, (artist, str(from_day),str(to_day)))
         
         record_past_list = cursor.fetchall()
         cursor.close()
         
         # logger.info("starting html generator from %s", landscape_data[0]) 
         
-        file_name = landscape_data[1] + "track_detail_" + detail_name + ".html"
+        file_name = landscape_data[1] + "artist_detail_" + detail_name + ".html"
         
         file_details = open(file_name, "w") #delete previous test file 
         file_details.close()
@@ -151,24 +151,15 @@ def main(artist, title, detail_name, days_back, chart_period):
     <div class="w3-container"  style="max-width:600px">
     """)
     
-        html_track_title =("""Detail skladby <b>""" + artist + """ - """ + title + """</b>:<br><br>\n""")
-        html_track_info =("""Skladbu hráli <b>""" + chart_period + """</b>:<br><br>\n""")
-        html_past_list_info = ("""<br>Před tímto obdobím skladbu hráli:<br><br>\n""")
-        html_nikdo = ("""<br>Před tímto obdobím ještě nikdo skladbu nehrál.<br><br>\n""")
+        html_track_title =("""Skladby hrané od skupiny <b>""" + artist + """</b>:<br><br>\n""")
+        html_track_info =("""Skladby hrané <b>""" + chart_period + """</b>:<br><br>\n""")
+        html_past_list_info = ("""<br>Skladby hrané před tímto obdobím:<br><br>\n""")
+        html_nikdo = ("""<br>Před tímto obdobím ještě nebyly žádné skladby od této skupiny hrány.<br><br>\n""")
 
-        artisttitle = artist + " - " + title
-        
-        import youtube_embed
-        
-        target_part = youtube_embed.main(artisttitle)
-        # target_part = "bXrc7w0Yffg" # pro testování - nespouští se youtube scrap
-        
-        html_youtube_embed = '<div class="video-container"><iframe src="https://www.youtube.com/embed/' + target_part + '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"></iframe> </div> <br>\n'        
-                
+                  
         file_details.write(html_header)
         file_details.write(html_menu_details)
         file_details.write(html_track_title)
-        file_details.write(html_youtube_embed)
         file_details.write(html_track_info)
 
         
@@ -179,7 +170,7 @@ def main(artist, title, detail_name, days_back, chart_period):
                 dj = "Neznámý DJ"
             else:
                 dj = str(detail_row[0])
-            detail_row_out = str(detail_row[1]).zfill(2) + "." + str(detail_row[2]).zfill(2) + "." + str(detail_row[3]) + " : " + dj + "<br>\n"
+            detail_row_out = str(detail_row[1]).zfill(2) + "." + str(detail_row[2]).zfill(2) + "." + str(detail_row[3]) + " : " + str(detail_row[4]) + "<br>\n"
             file_details.write(detail_row_out)
 
         if days_back != 3650:
@@ -195,7 +186,7 @@ def main(artist, title, detail_name, days_back, chart_period):
                         dj = "Neznámý DJ"
                     else:
                         dj = str(detail_row[0])
-                    detail_row_out = str(detail_row[1]).zfill(2) + "." + str(detail_row[2]).zfill(2) + "." + str(detail_row[3]) + " : " + dj + "<br>\n"
+                    detail_row_out = str(detail_row[1]).zfill(2) + "." + str(detail_row[2]).zfill(2) + "." + str(detail_row[3]) + " : " + str(detail_row[4]) + "<br>\n"
                     file_details.write(detail_row_out)
      
             

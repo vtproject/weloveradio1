@@ -4,6 +4,7 @@ import urllib.parse
 import re
 import logging
 import html_detail_generator
+import html_artist_detail_generator
 import cover_download
 
 def date_out(datum):
@@ -279,11 +280,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         from_day_out = datetime.date(2012, 9, 29) + datetime.timedelta(from_day)
         to_day_out = datetime.date(2012, 9, 29) + datetime.timedelta(to_day)
        
-        html_list_dates =("""  <div class="w3-third">
+        html_list_dates_tracks =("""  <div class="w3-third">
     <h2><b> """+ chart_name[chart_no] + """</b> (""" + date_out(from_day_out) + """ - """ + date_out(to_day_out) + """) </h2>  
 """)
-        file_tracks.write(html_list_dates)
-        file_artists.write(html_list_dates)
+        html_list_dates_artists =("""  <div class="w3-third">
+    <h2><b> """+ chart_name[chart_no] + """</b> (""" + date_out(from_day_out) + """ - """ + date_out(to_day_out) + """) </h2>  
+     <ol>""")
+
+        file_tracks.write(html_list_dates_tracks)
+        file_artists.write(html_list_dates_artists)
         
         chart_list_tracks = retrieve_chart_tracks(from_day, to_day, 0)
         chart_list_tracks_last = retrieve_chart_tracks(from_day, to_day, 1)
@@ -315,7 +320,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 html_list_tracks_bold = '        <li><span style="color:red">' + arrow +  '</span><a href = "track_detail_' + detail_file_number + '.html"><b>' + chart_list_tracks[item][0] + '</b> <img src="link.png" width="10" height="10"></a> (' + str(chart_list_tracks[item][1]) + ')</li>\n'
 
                 html_detail_generator.main(str(chart_list_tracks[item][2]), str(chart_list_tracks[item][3]),detail_file_number,days_back[chart_no],chart_period[chart_no])
-                detail_number_2 += 1
+                # detail_number_2 += 1
                 
             if item == 0:
                 html_cover = """&nbsp;&nbsp;<a href = "track_detail_""" + detail_file_number + """.html"><img src="covers/""" + cover_download.main(chart_list_tracks[0][0]) + """.jpg" width="288" height="162"></a>
@@ -341,7 +346,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         else:
                             arrow = "&nbsp;&nbsp;"
                         break    
-                html_list_artists = '        <li><span style="color:red">' + arrow +  '</span><a href = "https://www.discogs.com/search/?q=' + urllib.parse.quote_plus(chart_list_artists[item][0]) + '" target="_blank">' + chart_list_artists[item][0] + '</a> (' + str(chart_list_artists[item][1]) + ')</li>\n'
+                html_list_artists = '        <li><span style="color:red">' + arrow +  '</span><a href = "artist_detail_' + detail_file_number + '.html">' + chart_list_artists[item][0] + ' <img src="link.png" width="10" height="10"></a> (' + str(chart_list_artists[item][1]) + ')</li>\n'
+
+                html_artist_detail_generator.main(str(chart_list_artists[item][0]), detail_file_number,days_back[chart_no],chart_period[chart_no])
+                detail_number_2 += 1
+                
             file_artists.write(html_list_artists)
             
         detail_number_1 += 1

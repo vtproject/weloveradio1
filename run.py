@@ -71,7 +71,7 @@ else:
     # print("\n html OK? > Enter")
     # input()
 
-    import ftp_upload
+    #import ftp_upload
 
 logger.info("job done \n-----------------------------------------------------------------------")
 input()
