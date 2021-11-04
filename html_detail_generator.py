@@ -69,12 +69,12 @@ def main(artist, title, detail_name, days_back, chart_period):
             clean_tracklist_dj, day, month, year
         FROM
             playlist
-        WHERE clean_artist = '""" + artist + """' AND clean_title = '""" + title + """' AND days_from BETWEEN """ + str(from_day) + """ AND """ + str(to_day) + """ 
+        WHERE clean_artist = ? AND clean_title = ? AND days_from BETWEEN ? AND ? 
         ORDER BY
             year DESC,
             month DESC,
             day DESC;
-        """)
+        """, (artist, title, str(from_day),str(to_day)))
         
         record = cursor.fetchall()
         cursor.close()
@@ -88,12 +88,12 @@ def main(artist, title, detail_name, days_back, chart_period):
             clean_tracklist_dj, day, month, year
         FROM
             playlist
-        WHERE clean_artist = '""" + artist + """' AND clean_title = '""" + title + """' AND days_from BETWEEN """ + str(from_day) + """ AND """ + str(to_day) + """ 
+        WHERE clean_artist = ? AND clean_title = ? AND days_from BETWEEN ? AND ? 
         ORDER BY
             year DESC,
             month DESC,
             day DESC;
-        """)
+        """, (artist, title, str(from_day),str(to_day)))
         
         record_past_list = cursor.fetchall()
         cursor.close()
