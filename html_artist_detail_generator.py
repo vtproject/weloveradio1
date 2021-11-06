@@ -66,14 +66,17 @@ def main(artist, detail_name, days_back, chart_period):
         cursor = connection.cursor()
         cursor.execute("""
         SELECT
-            clean_tracklist_dj, day, month, year, clean_title
+            clean_title, count(clean_title)
+        FROM(
+        SELECT
+            clean_title
         FROM
             playlist
-        WHERE clean_artist = ? AND days_from BETWEEN ? AND ? 
+        WHERE clean_artist = ? AND days_from BETWEEN ? AND ?)
+        GROUP BY
+            clean_title
         ORDER BY
-            year DESC,
-            month DESC,
-            day DESC;
+            COUNT(clean_title) DESC;
         """, (artist, str(from_day),str(to_day)))
         
         record = cursor.fetchall()
@@ -85,14 +88,17 @@ def main(artist, detail_name, days_back, chart_period):
         cursor = connection.cursor()
         cursor.execute("""
         SELECT
-            clean_tracklist_dj, day, month, year, clean_title
+            clean_title, count(clean_title)
+        FROM(
+        SELECT
+            clean_title
         FROM
             playlist
-        WHERE clean_artist = ? AND days_from BETWEEN ? AND ? 
+        WHERE clean_artist = ? AND days_from BETWEEN ? AND ?)
+        GROUP BY
+            clean_title
         ORDER BY
-            year DESC,
-            month DESC,
-            day DESC;
+            COUNT(clean_title) DESC;
         """, (artist, str(from_day),str(to_day)))
         
         record_past_list = cursor.fetchall()
@@ -164,13 +170,7 @@ def main(artist, detail_name, days_back, chart_period):
 
         
         for detail_row in record:
-            if detail_row[0] is None:
-                dj = "Neznámý DJ"
-            elif detail_row[0] == "-":
-                dj = "Neznámý DJ"
-            else:
-                dj = str(detail_row[0])
-            detail_row_out = str(detail_row[1]).zfill(2) + "." + str(detail_row[2]).zfill(2) + "." + str(detail_row[3]) + " : " + str(detail_row[4]) + "<br>\n"
+            detail_row_out = str(detail_row[0]) + "(" + str(detail_row[1]) + ")<br>\n"
             file_details.write(detail_row_out)
 
         if days_back != 3650:
@@ -180,13 +180,7 @@ def main(artist, detail_name, days_back, chart_period):
                 file_details.write(html_past_list_info) 
                 
                 for detail_row in record_past_list:
-                    if detail_row[0] is None:
-                        dj = "Neznámý DJ"
-                    elif detail_row[0] == "-":
-                        dj = "Neznámý DJ"
-                    else:
-                        dj = str(detail_row[0])
-                    detail_row_out = str(detail_row[1]).zfill(2) + "." + str(detail_row[2]).zfill(2) + "." + str(detail_row[3]) + " : " + str(detail_row[4]) + "<br>\n"
+                    detail_row_out = str(detail_row[0]) + "(" + str(detail_row[1]) + ")<br>\n"
                     file_details.write(detail_row_out)
      
             
