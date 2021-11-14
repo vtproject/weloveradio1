@@ -75,12 +75,17 @@ def main(artist, detail_name, days_back, chart_period):
         WHERE clean_artist = ? AND days_from BETWEEN ? AND ?)
         GROUP BY
             clean_title
+        HAVING
+            COUNT(clean_title) > 1
         ORDER BY
             COUNT(clean_title) DESC;
         """, (artist, str(from_day),str(to_day)))
         
         record = cursor.fetchall()
         cursor.close()
+        if len(record) < 10:
+           for c in range (len(record),10):
+              record.append(["-",""])
         
         to_day = actual_day - days_back - 1
         from_day = 0
@@ -88,21 +93,27 @@ def main(artist, detail_name, days_back, chart_period):
         cursor = connection.cursor()
         cursor.execute("""
         SELECT
-            clean_title, count(clean_title)
+            clean_title, COUNT(clean_title)
         FROM(
         SELECT
             clean_title
         FROM
             playlist
-        WHERE clean_artist = ? AND days_from BETWEEN ? AND ?)
+        WHERE
+            clean_artist = ? AND days_from BETWEEN ? AND ?)
         GROUP BY
             clean_title
+        HAVING
+            COUNT(clean_title) > 1
         ORDER BY
             COUNT(clean_title) DESC;
         """, (artist, str(from_day),str(to_day)))
         
         record_past_list = cursor.fetchall()
         cursor.close()
+        if len(record_past_list) < 10:
+           for c in range (len(record_past_list),10):
+              record.append(["-",""])
         
         # logger.info("starting html generator from %s", landscape_data[0]) 
         
@@ -152,25 +163,23 @@ def main(artist, detail_name, days_back, chart_period):
       <h4>| <a href = "index.html"><U>nejhranější skladby</U></a> |&nbsp;<a href = "artists.html"><U>nejhranější&nbsp;skupiny</U></a>&nbsp;|<br>
     | <a href = "djs.html"><U>žebříčky podle moderátorů</U></a> |&nbsp;<br>
     <br>
-    <a href = "index.html">&#60; <U>zpět na nehranější skladby</U><br><br></a></h4> 
+    <a href = "artists.html">&#60; <U>zpět na nehranější skupiny</U><br><br></a></h4> 
     </div>
     <div class="w3-container"  style="max-width:600px">
     """)
     
-        html_track_title =("""Skladby hrané od skupiny <b>""" + artist + """</b>:<br><br>\n""")
-        html_track_info =("""Skladby hrané <b>""" + chart_period + """</b>:<br><br>\n""")
+        html_artist_title =("""Skladby hrané od skupiny <b>""" + artist + """</b>:<br><br>\n""")
+        html_artist_info =("""Skladby hrané <b>""" + chart_period + """</b>:<br><br>\n""")
         html_past_list_info = ("""<br>Skladby hrané před tímto obdobím:<br><br>\n""")
         html_nikdo = ("""<br>Před tímto obdobím ještě nebyly žádné skladby od této skupiny hrány.<br><br>\n""")
-
                   
         file_details.write(html_header)
         file_details.write(html_menu_details)
-        file_details.write(html_track_title)
-        file_details.write(html_track_info)
-
+        file_details.write(html_artist_title)
+        file_details.write(html_artist_info)
         
-        for detail_row in record:
-            detail_row_out = str(detail_row[0]) + "(" + str(detail_row[1]) + ")<br>\n"
+        for item in range(0, 10):
+            detail_row_out = (str(record[item][0]) + """ (""" + str(record[item][1]) + """)<br>\n""")
             file_details.write(detail_row_out)
 
         if days_back != 3650:
@@ -178,9 +187,8 @@ def main(artist, detail_name, days_back, chart_period):
                 file_details.write(html_nikdo)
             else:
                 file_details.write(html_past_list_info) 
-                
-                for detail_row in record_past_list:
-                    detail_row_out = str(detail_row[0]) + "(" + str(detail_row[1]) + ")<br>\n"
+                for item in range(0, 10):
+                    detail_row_out = (str(record_past_list[item][0]) + """ (""" + str(record_past_list[item][1]) + """)<br>\n""")
                     file_details.write(detail_row_out)
      
             
