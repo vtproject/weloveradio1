@@ -45,28 +45,56 @@ else:
 
 connection = sqlite3.connect(landscape_data[0])
 
-def retrieve_chart_tracks(from_day, to_day, days_back):
+def count_limit(from_day, to_day, days_back):
+    
+    from_day = from_day - days_back
+    to_day = to_day - days_back
+    
     cursor = connection.cursor()
-   
     cursor.execute("""
     SELECT
         clean_artist, clean_title, COUNT(clean_title)
     FROM
         playlist
-    WHERE clean_status = 1 AND days_from BETWEEN """ + str(from_day) + """ AND """ + str(to_day) + """
+    WHERE clean_status = 1 AND days_from BETWEEN ? AND ?
+    GROUP BY
+        clean_artist, clean_title
+    ORDER BY
+        COUNT(clean_title) DESC,
+        clean_artist ASC
+    LIMIT 20;
+    """, (str(from_day), str(to_day)))
+      
+    chart_unsorted = cursor.fetchall()
+    cursor.close()
+    return(chart_unsorted[19][2])
+
+
+def retrieve_chart_tracks(from_day, to_day, limit, days_back):
+    
+    from_day = from_day - days_back
+    to_day = to_day - days_back
+    
+    cursor = connection.cursor()
+    cursor.execute("""
+    SELECT
+        clean_artist, clean_title, COUNT(clean_title)
+    FROM
+        playlist
+    WHERE clean_status = 1 AND days_from BETWEEN ? AND ?
     GROUP BY
         clean_artist, clean_title
     HAVING
-        COUNT(clean_title) > 61    
+        COUNT(clean_title) > ?    
     ORDER BY
         COUNT(clean_title) DESC,
         clean_artist ASC;
-    """)
+    """, (str(from_day), str(to_day), limit))
     return(cursor.fetchall())
     cursor.close()
     
 
-def main(artist, title):
+def track_index(artist, title):
  
     try:
         cursor = connection.cursor()
@@ -113,26 +141,31 @@ def main(artist, title):
     except sqlite3.Error as error:
         logger.error("Failed:%s", error)
 
-
-chart=retrieve_chart_tracks(1497, 3322, 0)
-
-indexed_chart = []
-cnt=1
+def main(from_day, to_day, days_back):
+    limit=count_limit(from_day, to_day, days_back)-1
+    chart = retrieve_chart_tracks(from_day, to_day, limit, days_back)
+    
+    indexed_chart = []
+    cnt=1
  
-for track in chart:
-    raw_index = main(track[0], track[1])
-    index = (str(track[2]).zfill(3) + "." + #počet přehrání skladby v období
-             str(raw_index[0]).zfill(2) + "." + #počet djs celkem, kteří skladbu hráli
-             str(raw_index[1]).zfill(3) + "." + #počet přehrání skladby celkem
-             str(math.trunc(raw_index[2]*1000)).zfill(4) + "." + #převrácená hodnota průměrné četnosti hraní skladby ve dnech
-             str(raw_index[3]).zfill(4)) #počet přehrání skupiny celkem
-    indexed_chart.append([index, track[0], track[1]])
-    i = (cnt/len(chart))*100
-    print('Processing %i%%\r'%i, end="") #zobrazení procenta
-    cnt+=1
+    for track in chart:
+        raw_index = track_index(track[0], track[1])
+        index = (str(track[2]).zfill(3) + "." + #počet přehrání skladby v období
+                 str(raw_index[0]).zfill(2) + "." + #počet djs celkem, kteří skladbu hráli
+                 str(raw_index[1]).zfill(3) + "." + #počet přehrání skladby celkem
+                 str(math.trunc(raw_index[2]*1000)).zfill(4) + "." + #převrácená hodnota průměrné četnosti hraní skladby ve dnech
+                 str(raw_index[3]).zfill(4)) #počet přehrání skupiny celkem
+        indexed_chart.append([index, track[0], track[1]])
+        i = (cnt/len(chart))*100
+        print('Processing %i%%\r'%i, end="") #zobrazení procenta
+        cnt+=1
 
-indexed_chart.sort(key=operator.itemgetter(0), reverse = True) #seřazení listu podle atributu seznamu
+    indexed_chart.sort(key=operator.itemgetter(0), reverse = True) #seřazení listu podle atributu seznamu
 
-output_list = []
-for item in range(0, 20):
-    print(indexed_chart[item])    
+    output_list = []
+    for item in range(0, 20):
+        print(indexed_chart[item])    
+        
+main(3215, 3222, 0)
+print()
+main(3215, 3222, 1)
