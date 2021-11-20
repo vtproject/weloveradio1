@@ -58,7 +58,7 @@ execute_date = update_date - datetime.timedelta(1) # Datum generování html
 actual_day = execute_date - datetime.date(2012, 9, 29)
 actual_day = actual_day.days
 
-def main(artist, title, detail_name, days_back, chart_period):        
+def main(artist, title, track_plays, dj_index, track_play_index, time_diff_index, artist_play_index, detail_name, days_back, chart_period):        
     try:
         to_day = actual_day
         from_day = actual_day - days_back
@@ -152,14 +152,18 @@ def main(artist, title, detail_name, days_back, chart_period):
     """)
     
         html_track_title =("""Detail skladby <b>""" + artist + """ - """ + title + """</b>:<br><br>\n""")
-        html_track_info =("""Skladbu hráli <b>""" + chart_period + """</b>:<br><br>\n""")
+        html_track_info =("""Skladbu hráli """ + chart_period + """:<br><br>\n""")
         html_past_list_info = ("""<br>Před tímto obdobím skladbu hráli:<br><br>\n""")
         html_nikdo = ("""<br>Před tímto obdobím ještě nikdo skladbu nehrál.<br><br>\n""")
+        html_track_index = ("""Počet hrání skladby""" + chart_period + """: <b>""" + track_plays + """</b><br>\n
+                               Počet hrání skladby celkem: <b>""" + track_play_index + """</b><br>\n
+                               Počet moderátorů, kteří hráli skladbu celkem: <b>""" + dj_index + """</b><br>\n
+                               Průměrná doba mezi přehráními skladby ve dnech: <b>""" + time_diff_index + """</b><br>\n
+                               Počet hraní skupiny celkem: <b>""" + artist_play_index + """</b><br><br>\n""") 
 
         artisttitle = artist + " - " + title
           
         import youtube_embed
-        
         target_part = youtube_embed.main(artisttitle)
         # target_part = "bXrc7w0Yffg" # pro testování - nespouští se youtube scrap
         
@@ -169,6 +173,7 @@ def main(artist, title, detail_name, days_back, chart_period):
         file_details.write(html_menu_details)
         file_details.write(html_track_title)
         file_details.write(html_youtube_embed)
+        file_details.write(html_track_index)
         file_details.write(html_track_info)
 
         

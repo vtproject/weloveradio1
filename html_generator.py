@@ -5,6 +5,7 @@ import re
 import logging
 import html_detail_generator
 import cover_download
+import track_chart
 
 def date_out(datum):
     date_out_f = str(datum)
@@ -12,36 +13,6 @@ def date_out(datum):
     date_out_f = date_out_f.strftime('%#d.%#m.%Y')
     return date_out_f
 
-def retrieve_chart_tracks(from_day, to_day, days_back):
-    cursor = connection.cursor()
-    from_day = from_day - days_back
-    to_day = to_day - days_back    
-   
-    cursor.execute("""
-    SELECT
-        clean_artist, clean_title, COUNT(clean_title)
-    FROM
-        playlist
-    WHERE clean_status = 1 AND days_from BETWEEN """ + str(from_day) + """ AND """ + str(to_day) + """
-    GROUP BY
-        clean_artist, clean_title
-    ORDER BY
-        COUNT(clean_title) DESC,
-        clean_artist ASC;
-    """)
-    record = cursor.fetchall()
-    chart_list = []
-          
-    for chart_row in range(0, 20):
-        chart_item_artisttitle = record[chart_row]
-        if chart_item_artisttitle[2] < 2:
-            chart_item_full = ["-",""]
-        else:
-            artisttitle = chart_item_artisttitle[0] + " - " + chart_item_artisttitle[1]
-            chart_item_full = [artisttitle, chart_item_artisttitle[2], chart_item_artisttitle[0], chart_item_artisttitle[1]]
-        chart_list.append(chart_item_full)
-        cursor.close()
-    return(chart_list)
 
 def retrieve_chart_artists(from_day, to_day, days_back):
     cursor = connection.cursor()
@@ -260,14 +231,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     file_djs.write(html_header)
     file_djs.write(html_menu_djs)
     
-    print("      ____________________") #progress bar
+    # print("      ____________________") #progress bar
         
     detail_number_1 = 1
         
     for chart_no in range(0,6):            
         
         chart_no_monitor = chart_no + 1
-        print("%s/6 > " % chart_no_monitor, end = "", flush=True) #monitor
+        # print("%s/6 > " % chart_no_monitor, end = "", flush=True) #monitor
                 
         if actual_day - days_back[chart_no] < 1:
             from_day = 0
@@ -289,42 +260,46 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         file_tracks.write(html_list_dates_tracks)
         file_artists.write(html_list_dates_artists)
         
-        chart_list_tracks = retrieve_chart_tracks(from_day, to_day, 0)
-        chart_list_tracks_last = retrieve_chart_tracks(from_day, to_day, 1)
-        
+        chart_list_tracks = track_chart.main(from_day, to_day)
+                
         chart_list_artists = retrieve_chart_artists(from_day, to_day, 0)
         chart_list_artists_last = retrieve_chart_artists(from_day, to_day, 1)        
         detail_number_2 = 1
 
 ###########################################################generate index.html
-        for item in range(0, 20):
-            print("█", end = "", flush=True) #monitor 
+        for item in range(0,20):
+   
+            detail_file_number = str(detail_number_1).zfill(2) + "_" + str(detail_number_2).zfill(2)                 
             
-            if chart_list_tracks[item][0] == "-":
-                html_list_tracks = '        <li>-</li>\n' 
-            else:
-                for track_last in chart_list_tracks_last:
-                    arrow = "*&nbsp;"  
-                    if chart_list_tracks[item][0] == track_last[0]:                     
-                        if chart_list_tracks[item][1] > track_last[1]:
-                            arrow = "&uarr;&nbsp;" 
-                        elif chart_list_tracks[item][1] < track_last[1]:
-                            arrow = "&darr;&nbsp;" 
-                        else:
-                            arrow = "&nbsp;&nbsp;"
-                        break    
-                detail_file_number = str(detail_number_1).zfill(2) + "_" + str(detail_number_2).zfill(2)                 
-                
-                html_list_tracks = '        <li><span style="color:red">' + arrow +  '</span><a href = "track_detail_' + detail_file_number + '.html">' + chart_list_tracks[item][0] + ' <img src="link.png" width="10" height="10"></a> (' + str(chart_list_tracks[item][1]) + ')</li>\n'
-                html_list_tracks_bold = '        <li><span style="color:red">' + arrow +  '</span><a href = "track_detail_' + detail_file_number + '.html"><b>' + chart_list_tracks[item][0] + '</b> <img src="link.png" width="10" height="10"></a> (' + str(chart_list_tracks[item][1]) + ')</li>\n'
+            html_list_tracks =( '        <li><span style="color:red">' + chart_list_tracks[item][0] + 
+                                '</span><a href = "track_detail_' + detail_file_number + 
+                                '.html">' + chart_list_tracks[item][1] + ' - ' + chart_list_tracks[item][2] +
+                                ' <img src="link.png" width="10" height="10"></a></li>\n')
+                                
+            html_list_tracks_bold = ('        <li><span style="color:red">' + chart_list_tracks[item][0] +  
+                                     '</span><a href = "track_detail_' + detail_file_number + 
+                                     '.html"><b>' + chart_list_tracks[item][1] + ' - ' + chart_list_tracks[item][2] + 
+                                     '</b> <img src="link.png" width="10" height="10"></a></li>\n')
 
-                html_detail_generator.main(str(chart_list_tracks[item][2]), str(chart_list_tracks[item][3]),detail_file_number,days_back[chart_no],chart_period[chart_no])
-                detail_number_2 += 1
+            html_detail_generator.main(str(chart_list_tracks[item][1]),
+                                       str(chart_list_tracks[item][2]),
+                                       str(chart_list_tracks[item][3]),
+                                       str(chart_list_tracks[item][4]),
+                                       str(chart_list_tracks[item][5]),
+                                       str(chart_list_tracks[item][6]),
+                                       str(chart_list_tracks[item][7]),
+                                       detail_file_number,
+                                       days_back[chart_no],
+                                       chart_period[chart_no])
+            detail_number_2 += 1
                 
             if item == 0:
-                html_cover = """&nbsp;&nbsp;<a href = "track_detail_""" + detail_file_number + """.html"><img src="covers/""" + cover_download.main(chart_list_tracks[0][0]) + """.jpg" width="288" height="162"></a>
+                artisttitle = chart_list_tracks[item][1] + "-" + chart_list_tracks[item][2] 
+                html_cover = ("""&nbsp;&nbsp;<a href = "track_detail_""" + detail_file_number + 
+                              """.html"><img src="covers/""" + cover_download.main(artisttitle) + 
+                              """.jpg" width="288" height="162"></a>
      <ol>
-     """
+     """)
                 file_tracks.write(html_cover)
                 file_tracks.write(html_list_tracks_bold)    
             else:
@@ -347,6 +322,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         break    
                 html_list_artists = '        <li><span style="color:red">' + arrow +  '</span><a href = "https://www.discogs.com/search/?q=' + urllib.parse.quote_plus(chart_list_artists[item][0]) + '" target="_blank">' + chart_list_artists[item][0] + '</a> (' + str(chart_list_artists[item][1]) + ')</li>\n'
             file_artists.write(html_list_artists)
+            
+            print("█", end = "", flush=True) #monitor
             
         detail_number_1 += 1
         paragraph_count += 1

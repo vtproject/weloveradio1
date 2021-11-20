@@ -202,22 +202,24 @@ def main(from_day, to_day):
     chart = indexed_chart(from_day, to_day, 0)
     chart_last = indexed_chart(from_day, to_day, 1)
     
-    #print(chart)
+    # print(chart)
+    # print(chart_last)
+        
     chart_out = []
     
     for track in chart:
         arrow = "* "#"*&nbsp;"
         if (track[1] == "-" and track[2] == ""):
-            arrow = "  " #"&nbsp;&nbsp;"
+            arrow = "&nbsp;&nbsp;"
         else:
             for track_last in chart_last:
                 if (track[1] == track_last[1] and track[2] == track_last[2]):
-                    if track[3] > track_last[3]:
-                        arrow = "V " #"&darr;&nbsp;" 
-                    elif track[3] < track_last[3]:
-                        arrow = "A " #"&uarr;&nbsp;" 
+                    if track[8] > track_last[8]:
+                        arrow = "&darr;&nbsp;" 
+                    elif track[8] < track_last[8]:
+                        arrow = "&uarr;&nbsp;" 
                     else:
-                        arrow = "  " #"&nbsp;&nbsp;"
+                        arrow = "&nbsp;&nbsp;"
                     break
         #print(arrow, track[1], track[2], track[3], track[4], track[5], track[6], track[7])
         chart_out.append([arrow, track[1], track[2], track[3], track[4], track[5], track[6], track[7]])
