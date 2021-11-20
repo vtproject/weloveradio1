@@ -141,12 +141,12 @@ def track_index(artist, title):
     except sqlite3.Error as error:
         logger.error("Failed:%s", error)
 
-def main(from_day, to_day, days_back):
-    limit=count_limit(from_day, to_day, days_back)-1
+def indexed_chart(from_day, to_day, days_back):
+    limit = count_limit(from_day, to_day, days_back)-1
     chart = retrieve_chart_tracks(from_day, to_day, limit, days_back)
     
     indexed_chart = []
-    cnt=1
+    cnt = 1
  
     for track in chart:
         raw_index = track_index(track[0], track[1])
@@ -161,11 +161,33 @@ def main(from_day, to_day, days_back):
         cnt+=1
 
     indexed_chart.sort(key=operator.itemgetter(0), reverse = True) #seřazení listu podle atributu seznamu
+    indexed_chart = indexed_chart[0:20]
+    
+    cnt = 1    
+    for item in range(0,20):
+        indexed_chart[item].append(cnt)
+        cnt+=1
+    
+    # for item in range(0, 20):
+        # print(indexed_chart[item])
+    
+    return(indexed_chart)        
 
-    output_list = []
-    for item in range(0, 20):
-        print(indexed_chart[item])    
-        
-main(3215, 3222, 0)
-print()
-main(3215, 3222, 1)
+def main(from_day, to_day):       
+    chart = indexed_chart(from_day, to_day, 0)
+    chart_last = indexed_chart(from_day, to_day, 1)
+    
+    for track in chart:
+        arrow = "* "#"*&nbsp;"
+        for track_last in chart_last:
+            if (track[1] == track_last[1] and track[2] == track_last[2]):
+                if track[3] > track_last[3]:
+                    arrow = "V " #"&uarr;&nbsp;" 
+                elif track[3] < track_last[3]:
+                    arrow = "A " #"&darr;&nbsp;" 
+                else:
+                    arrow = "  " #"&nbsp;&nbsp;"
+                break
+        print(arrow, track[0], track[1],track[2])
+
+main(2150, 2151)
