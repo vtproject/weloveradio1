@@ -153,9 +153,10 @@ def track_index(artist, title):
             else:    
                 time_diff_index=(sum(timediff)/len(timediff)) #průměrný počet dní mezi hraním skladby   
             if time_diff_index == 0:
-                time_diff_index = 2
+                time_diff_index = 2 #nereálné zobrazení v detailu skladby
             else:
                 time_diff_index = 1/time_diff_index 
+            
             return([djindex, track_play_index, time_diff_index, artist_play_index])
      
         
@@ -176,7 +177,7 @@ def indexed_chart(from_day, to_day, days_back):
                  str(raw_index[1]).zfill(3) + "." + #počet přehrání skladby celkem
                  str(math.trunc(raw_index[2]*1000)).zfill(4) + "." + #převrácená hodnota průměrné četnosti hraní skladby ve dnech
                  str(raw_index[3]).zfill(4)) #počet přehrání skupiny celkem
-        indexed_chart.append([index, track[0], track[1]])
+        indexed_chart.append([index, track[0], track[1], track[2], raw_index[0], raw_index[1], round(1/raw_index[2], 1), raw_index[3]])
         i = (cnt/len(chart))*100
         print('Processing %i%%\r'%i, end="") #zobrazení procenta
         cnt+=1
@@ -185,7 +186,7 @@ def indexed_chart(from_day, to_day, days_back):
     
     if len(indexed_chart) < 20:
         for x in range(0,20-len(indexed_chart)):
-            indexed_chart.append(["0","-","-"])
+            indexed_chart.append(["0", "-", "", "", "", "", "", "", ""])
 
       
     indexed_chart = indexed_chart[0:20]
@@ -201,20 +202,23 @@ def main(from_day, to_day):
     chart = indexed_chart(from_day, to_day, 0)
     chart_last = indexed_chart(from_day, to_day, 1)
     
+    #print(chart)
+    chart_out = []
+    
     for track in chart:
         arrow = "* "#"*&nbsp;"
-        if (track[1] == "-" and track[2] == "-"):
+        if (track[1] == "-" and track[2] == ""):
             arrow = "  " #"&nbsp;&nbsp;"
         else:
             for track_last in chart_last:
                 if (track[1] == track_last[1] and track[2] == track_last[2]):
                     if track[3] > track_last[3]:
-                        arrow = "V " #"&uarr;&nbsp;" 
+                        arrow = "V " #"&darr;&nbsp;" 
                     elif track[3] < track_last[3]:
-                        arrow = "A " #"&darr;&nbsp;" 
+                        arrow = "A " #"&uarr;&nbsp;" 
                     else:
                         arrow = "  " #"&nbsp;&nbsp;"
                     break
-        print(arrow, track[0], track[1],track[2])
-
-main(3307, 3338)
+        #print(arrow, track[1], track[2], track[3], track[4], track[5], track[6], track[7])
+        chart_out.append([arrow, track[1], track[2], track[3], track[4], track[5], track[6], track[7]])
+    return(chart_out)
