@@ -294,7 +294,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             detail_number_2 += 1
                 
             if item == 0:
-                artisttitle = chart_list_tracks[item][1] + "-" + chart_list_tracks[item][2] 
+                artisttitle = chart_list_tracks[item][1] + " - " + chart_list_tracks[item][2] 
                 html_cover = ("""&nbsp;&nbsp;<a href = "track_detail_""" + detail_file_number + 
                               """.html"><img src="covers/""" + cover_download.main(artisttitle) + 
                               """.jpg" width="288" height="162"></a>
