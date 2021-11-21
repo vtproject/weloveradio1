@@ -155,7 +155,7 @@ def main(artist, title, track_plays, dj_index, track_play_index, time_diff_index
         html_track_info =("""Skladbu hráli """ + chart_period + """:<br><br>\n""")
         html_past_list_info = ("""<br>Před tímto obdobím skladbu hráli:<br><br>\n""")
         html_nikdo = ("""<br>Před tímto obdobím ještě nikdo skladbu nehrál.<br><br>\n""")
-        html_track_index = ("""Počet hrání skladby""" + chart_period + """: <b>""" + track_plays + """</b><br>\n
+        html_track_index = ("""Počet hrání skladby """ + chart_period + """: <b>""" + track_plays + """</b><br>\n
                                Počet hrání skladby celkem: <b>""" + track_play_index + """</b><br>\n
                                Počet moderátorů, kteří hráli skladbu celkem: <b>""" + dj_index + """</b><br>\n
                                Průměrná doba mezi přehráními skladby ve dnech: <b>""" + time_diff_index + """</b><br>\n

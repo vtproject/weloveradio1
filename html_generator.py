@@ -144,7 +144,7 @@ connection = sqlite3.connect(landscape_data[0])
         
 paragraph_count = 0
 
-update_date = datetime.date.today()  # Datum generování datetime.date(2021, 4, 3)  datetime.date.today() 
+update_date = datetime.date(2021, 4, 2)  # Datum generování datetime.date(2021, 4, 3)  datetime.date.today() 
 execute_date = update_date - datetime.timedelta(1) # Datum generování html  
 
 actual_day = execute_date - datetime.date(2012, 9, 29)
@@ -269,28 +269,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 ###########################################################generate index.html
         for item in range(0,20):
    
-            detail_file_number = str(detail_number_1).zfill(2) + "_" + str(detail_number_2).zfill(2)                 
-            
-            html_list_tracks =( '        <li><span style="color:red">' + chart_list_tracks[item][0] + 
-                                '</span><a href = "track_detail_' + detail_file_number + 
-                                '.html">' + chart_list_tracks[item][1] + ' - ' + chart_list_tracks[item][2] +
-                                ' <img src="link.png" width="10" height="10"></a></li>\n')
-                                
-            html_list_tracks_bold = ('        <li><span style="color:red">' + chart_list_tracks[item][0] +  
-                                     '</span><a href = "track_detail_' + detail_file_number + 
-                                     '.html"><b>' + chart_list_tracks[item][1] + ' - ' + chart_list_tracks[item][2] + 
-                                     '</b> <img src="link.png" width="10" height="10"></a></li>\n')
+            if chart_list_tracks[item][1] == "-":
+                html_list_tracks = '        <li> -</li>\n' 
+            else:
+                detail_file_number = str(detail_number_1).zfill(2) + "_" + str(detail_number_2).zfill(2)                 
+                
+                html_list_tracks =( '        <li><span style="color:red">' + chart_list_tracks[item][0] + 
+                                    '</span><a href = "track_detail_' + detail_file_number + 
+                                    '.html">' + chart_list_tracks[item][1] + ' - ' + chart_list_tracks[item][2] +
+                                    ' <img src="link.png" width="10" height="10"></a></li>\n')
+                                    
+                html_list_tracks_bold = ('        <li><span style="color:red">' + chart_list_tracks[item][0] +  
+                                         '</span><a href = "track_detail_' + detail_file_number + 
+                                         '.html"><b>' + chart_list_tracks[item][1] + ' - ' + chart_list_tracks[item][2] + 
+                                         '</b> <img src="link.png" width="10" height="10"></a></li>\n')
 
-            html_detail_generator.main(str(chart_list_tracks[item][1]),
-                                       str(chart_list_tracks[item][2]),
-                                       str(chart_list_tracks[item][3]),
-                                       str(chart_list_tracks[item][4]),
-                                       str(chart_list_tracks[item][5]),
-                                       str(chart_list_tracks[item][6]),
-                                       str(chart_list_tracks[item][7]),
-                                       detail_file_number,
-                                       days_back[chart_no],
-                                       chart_period[chart_no])
+                html_detail_generator.main(str(chart_list_tracks[item][1]),
+                                           str(chart_list_tracks[item][2]),
+                                           str(chart_list_tracks[item][3]),
+                                           str(chart_list_tracks[item][4]),
+                                           str(chart_list_tracks[item][5]),
+                                           str(chart_list_tracks[item][6]),
+                                           str(chart_list_tracks[item][7]),
+                                           detail_file_number,
+                                           days_back[chart_no],
+                                           chart_period[chart_no])
             detail_number_2 += 1
                 
             if item == 0:
