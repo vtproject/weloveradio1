@@ -26,6 +26,7 @@ for x in range(0,100):
         file.write(response.content)
         file.close()
         input()
+print("new allo")
  
 
 
