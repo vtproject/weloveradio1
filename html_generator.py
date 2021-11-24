@@ -277,12 +277,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 html_list_tracks =( '        <li><span style="color:red">' + chart_list_tracks[item][0] + 
                                     '</span><a href = "track_detail_' + detail_file_number + 
                                     '.html">' + chart_list_tracks[item][1] + ' - ' + chart_list_tracks[item][2] +
-                                    ' <img src="link.png" width="10" height="10"></a></li>\n')
+                                    ' <img src="link.png" width="10" height="10"></a> (' + str(chart_list_tracks[item][3]) +
+                                    ')</li>\n')
                                     
                 html_list_tracks_bold = ('        <li><span style="color:red">' + chart_list_tracks[item][0] +  
                                          '</span><a href = "track_detail_' + detail_file_number + 
                                          '.html"><b>' + chart_list_tracks[item][1] + ' - ' + chart_list_tracks[item][2] + 
-                                         '</b> <img src="link.png" width="10" height="10"></a></li>\n')
+                                         '</b> <img src="link.png" width="10" height="10"></a> (' + str(chart_list_tracks[item][3]) +
+                                         ')</li>\n')
 
                 html_detail_generator.main(str(chart_list_tracks[item][1]),
                                            str(chart_list_tracks[item][2]),
