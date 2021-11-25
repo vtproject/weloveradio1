@@ -208,16 +208,16 @@ def main(from_day, to_day):
     chart_out = []
     
     for track in chart:
-        arrow = "* "#"*&nbsp;"
+        arrow = "*&nbsp;"
         if (track[1] == "-" and track[2] == ""):
             arrow = "&nbsp;&nbsp;"
         else:
             for track_last in chart_last:
                 if (track[1] == track_last[1] and track[2] == track_last[2]):
-                    if track[8] > track_last[8]:
-                        arrow = "&darr;&nbsp;" 
-                    elif track[8] < track_last[8]:
+                    if track[3] > track_last[3]:
                         arrow = "&uarr;&nbsp;" 
+                    elif track[3] < track_last[3]:
+                        arrow = "&darr;&nbsp;" 
                     else:
                         arrow = "&nbsp;&nbsp;"
                     break

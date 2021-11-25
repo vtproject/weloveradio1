@@ -77,7 +77,29 @@ def month_back(artist, title, actual_day, track_switch):
 
 def summ_rest(artist, title, actual_day, track_switch):
 
-    to_day = actual_day - 31
+    to_day = actual_day - 30
+    from_day = 0
+    
+    cursor = connection.cursor()
+    cursor.execute("""
+    SELECT
+        clean_tracklist_dj, COUNT(clean_tracklist_dj)
+    FROM
+        playlist
+    WHERE clean_artist = ? AND clean_title = ? AND days_from BETWEEN ? AND ?
+    GROUP BY
+        clean_tracklist_dj    
+    ORDER BY
+        COUNT(clean_tracklist_dj) DESC;
+    """, (artist, title, str(from_day),str(to_day)))
+    
+    record = cursor.fetchall()
+    cursor.close()
+    return(record)
+    
+def first_play(artist, title, actual_day, track_switch):
+
+    to_day = actual_day - 30
     from_day = 0
     
     cursor = connection.cursor()
@@ -95,13 +117,18 @@ def summ_rest(artist, title, actual_day, track_switch):
     
     record = cursor.fetchall()
     cursor.close()
-    return(record)
-
+    return(record[-1])    
+   
 update_date = datetime.date.today()  # Datum generování datetime.date(2021, 4, 3)  datetime.date.today() 
 execute_date = update_date - datetime.timedelta(1) # Datum generování html  
 actual_day = execute_date - datetime.date(2012, 9, 29)
 actual_day = actual_day.days
 
-print(month_back("ALT-J", "U&Me", actual_day, 0))
+main(
+
+print(month_back("YOUNG FATHERS", "In My View", actual_day, 0))
 print()
-print(summ_rest("ALT-J", "U&Me", actual_day, 0))
+print(summ_rest("YOUNG FATHERS", "In My View", actual_day, 0))
+print()
+print(first_play("YOUNG FATHERS", "In My View", actual_day, 0))
+
