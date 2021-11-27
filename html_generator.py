@@ -6,6 +6,7 @@ import logging
 import html_detail_generator
 import cover_download
 import track_chart
+import news_charts
 
 def date_out(datum):
     date_out_f = str(datum)
@@ -134,11 +135,11 @@ landscape_file = open("landscape.switch", "r")
 landscape_switch = landscape_file.read()
 landscape_file.close()
 if landscape_switch == "PROD":
-    landscape_data = ["weloveradio1db_P.sqlite", "html_P/index.html", "html_P/artists.html", "html_P/djs.html"]
+    landscape_data = ["weloveradio1db_P.sqlite", "html_P/index.html", "html_P/artists.html", "html_P/djs.html", "html_P/news.html"]
 elif landscape_switch == "TEST":
-    landscape_data = ["weloveradio1db_T.sqlite", "html_T/index.html", "html_T/artists.html", "html_T/djs.html"]
+    landscape_data = ["weloveradio1db_T.sqlite", "html_T/index.html", "html_T/artists.html", "html_T/djs.html", "html_T/news.html"]
 else:
-    landscape_data = ["weloveradio1db_D.sqlite", "html_D/index.html", "html_D/artists.html", "html_D/djs.html"]
+    landscape_data = ["weloveradio1db_D.sqlite", "html_D/index.html", "html_D/artists.html", "html_D/djs.html", "html_D/news.html"]
 
 connection = sqlite3.connect(landscape_data[0])
         
@@ -158,13 +159,17 @@ try:
     file_tracks = open(landscape_data[1], "w") #delete previous test file 
     file_artists = open(landscape_data[2], "w") 
     file_djs = open(landscape_data[3], "w") 
+    file_news = open(landscape_data[4], "w")
+    
     file_tracks.close()
     file_artists.close()
     file_djs.close()
+    file_news.close()
 
     file_tracks = open(landscape_data[1], "a", encoding = "utf-8")
     file_artists = open(landscape_data[2], "a", encoding = "utf-8")
     file_djs = open(landscape_data[3], "a", encoding = "utf-8")
+    file_news = open(landscape_data[4], "a", encoding = "utf-8")
     
     html_header =("""<!DOCTYPE html>
 <html lang="cs">
@@ -221,6 +226,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </div>
 <div class="w3-row-padding">
 """)
+
+    html_end = ("""</div>
+<div class="w3-container w3-red">
+  <br>
+</div>
+</body>
+</html>""") 
     
     file_tracks.write(html_header)
     file_tracks.write(html_menu_tracks)
@@ -230,6 +242,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     
     file_djs.write(html_header)
     file_djs.write(html_menu_djs)
+    
+    file_news.write(html_header)
+    file_news.write(html_menu_artists)
     
     # print("      ____________________") #progress bar
         
@@ -259,14 +274,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         file_tracks.write(html_list_dates_tracks)
         file_artists.write(html_list_dates_artists)
-        
-        chart_list_tracks = track_chart.main(from_day, to_day)
                 
         chart_list_artists = retrieve_chart_artists(from_day, to_day, 0)
         chart_list_artists_last = retrieve_chart_artists(from_day, to_day, 1)        
         detail_number_2 = 1
 
 ###########################################################generate index.html
+        chart_list_tracks = track_chart.main(from_day, to_day)
         for item in range(0,20):
    
             if chart_list_tracks[item][1] == "-":
@@ -284,16 +298,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                          '.html"><b>' + chart_list_tracks[item][1] + ' - ' + chart_list_tracks[item][2] + 
                                          '</b> <img src="link.png" width="10" height="10"></a></li>\n')
 
-                html_detail_generator.main(str(chart_list_tracks[item][1]),
-                                           str(chart_list_tracks[item][2]),
-                                           str(chart_list_tracks[item][3]),
-                                           str(chart_list_tracks[item][4]),
-                                           str(chart_list_tracks[item][5]),
-                                           str(chart_list_tracks[item][6]),
-                                           str(chart_list_tracks[item][7]),
-                                           detail_file_number,
-                                           days_back[chart_no],
-                                           chart_period[chart_no])
+                # html_detail_generator.main(str(chart_list_tracks[item][1]),
+                                           # str(chart_list_tracks[item][2]),
+                                           # str(chart_list_tracks[item][3]),
+                                           # str(chart_list_tracks[item][4]),
+                                           # str(chart_list_tracks[item][5]),
+                                           # str(chart_list_tracks[item][6]),
+                                           # str(chart_list_tracks[item][7]),
+                                           # detail_file_number,
+                                           # days_back[chart_no],
+                                           # chart_period[chart_no])
             detail_number_2 += 1
                 
             if item == 0:
@@ -350,12 +364,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             
             
         
-    html_end = ("""</div>
-<div class="w3-container w3-red">
-  <br>
-</div>
-</body>
-</html>""") 
     file_tracks.write(html_end)
     file_artists.write(html_end)
 
@@ -417,6 +425,33 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     print("\n")
     file_djs.write(html_end)
     file_djs.close()
+    
+###########################################################generate news.html 
+    logger.info("starting news generator from %s", landscape_data[0]) 
+    chart_lists_news = news_charts.main(from_day, to_day)
+    
+    file_news.write("Novinka = Hraná více jak 2x v minulém týdnu AND nebyla hraní nikdy před tím<br><br>Novinky skladby <br><br>")
+    
+    for item in range(0, len(chart_lists_news[0])):
+        artisttitle = chart_lists_news[0][item][0] + " - " + chart_lists_news[0][item][1] 
+        html_list_tracks = ('        <li><a href = "https://www.youtube.com/results?search_query=' + 
+                            urllib.parse.quote_plus(artisttitle) + 
+                            '" target="_blank">' + artisttitle + 
+                            '</a> (' + str(chart_lists_news[0][item][2]) + ')</li>\n')
+        file_news.write(html_list_tracks)
+        
+    file_news.write("<br>Novinky skupiny <br><br>")
+    
+    for item in range(0, len(chart_lists_news[1])):
+        html_list_tracks = ('        <li><a href = "https://www.youtube.com/results?search_query=' + 
+                            urllib.parse.quote_plus(str(chart_lists_news[1][item][0])) + 
+                            '" target="_blank">' + str(chart_lists_news[1][item][0]) + 
+                            '</a> (' + str(chart_lists_news[1][item][1]) + ')</li>\n')
+        file_news.write(html_list_tracks)        
+        
+    file_news.write(html_end)
+    file_news.close()
+    
  
 except sqlite3.Error as error:
     logger.error("Failed:%s", error)

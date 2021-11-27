@@ -135,11 +135,6 @@ def main(from_day, to_day):
     chart_tracks = last_week_tracks(from_day, to_day)
     chart_artists = last_week_artists(from_day, to_day)
 
-    # print(chart_tracks) 
-    # print()
-    # print(chart_artists) 
-    # print()
-    
     tracks_out = []
     artists_out = []
     
@@ -154,6 +149,5 @@ def main(from_day, to_day):
         if track[1] == artist_all_time(track[0], to_day): 
             artists_out.append([track[0],track[1]])    
     
-    return(tracks_out, artists_out)
-
-main(0, 3345)
+    return([tracks_out, artists_out])
+    # return([[['ARLETA', 'Statement', 4], ['DUNCAN FORBES', 'The Next Step', 3], ['HVOB', 'Bruise', 3], ['OTIK', 'Lightyear Dub', 3], ['OVERMONO', 'Bby', 3], ['AI FEN', 'Can You Believe', 2], ['ASTA HIROKI', 'Fold', 2], ['BEACH HOUSE', 'Superstar', 2], ['BEN CAPLAN', 'Birds With Broken Wings', 2], ['BIG THIEF', 'Time Escaping', 2], ['CARDINAL SOUND', 'Imagine', 2], ['CLAMS CASINO', 'Misty', 2], ['DÝM', 'Andělský Tornádo', 2], ['EARL SWEATSHIRT', '2010', 2], ['LAND OF TALK', 'Leave Life Alone', 2], ['LOZ GODDARD', 'When Time Slows It Feels Weird', 2], ['NILS FRAHM', 'Late', 2], ['SALARYMAN', 'Your Shadow', 2], ['SOICHI TERADA', 'Double Spire', 2], ['TEETHGRYNDER', 'Not Lonely', 2], ['THE MICRONAUT', 'Ice Hockey', 2], ['YUMI AND THE WEATHER', 'Howl', 2], ['YUUL', 'Feel Ft. Kyson', 2]], [['TEETHGRYNDER', 3], ['CARDINAL SOUND', 2], ['DOMENICO STARNONE', 2], ['DÝM', 2], ['MISO EXTRA', 2], ['NEVEREŠ', 2], ['ROBOTS WITH NO SOUL', 2], ['SERENA GABRIEL', 2], ['SUSTRAPPERAZZI', 2]]])
