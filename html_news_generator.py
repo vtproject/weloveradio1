@@ -1,12 +1,9 @@
 import sqlite3
 import datetime
-import urllib.parse
 import re
 import logging
-import html_detail_generator
-import cover_download
-import track_chart
-import news_charts
+import news_chart
+import youtube_embed
 
 def date_out(datum):
     date_out_f = str(datum)
@@ -64,11 +61,8 @@ execute_date = update_date - datetime.timedelta(1) # Datum generování html
 
 actual_day = execute_date - datetime.date(2012, 9, 29)
 actual_day = actual_day.days
-days_back = [7, 30, 183, 365, 1825, 3650]
-chart_name = ["za minulý týden", "za minulý měsíc", "za minulých 6 měsíců", "za minulý rok", "za minulých 5 let", "za minulých 10 let"]
-chart_period = ["v minulém týdnu", "v minulém měsíci", "v minulých 6 měsících", "v minulém roce", "v minulých 5 letech", "v minulých 10 letech"]
 try:
-    logger.info("starting tracks, details and artists html generator from %s", landscape_data[0]) 
+    logger.info("starting news html generator from %s", landscape_data[0]) 
     
     file_news = open(landscape_data[4], "w") #delete previous test file 
     file_news.close()
@@ -109,236 +103,67 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <a href="changelog.html"><U>info / changelog</U></a>&nbsp; &nbsp; &nbsp; <a href="https://github.com/vtproject/weloveradio1" target="_blank"><U>GitHub</U></a>&nbsp; &nbsp; &nbsp;&nbsp;aktualizace:&nbsp;""" + date_out(update_date) + """<br>
   <br>
 </div>""")
-
+    file_news.write(html_header)
+    
     html_menu_news =("""<div class="w3-container">
-  <h4>| nejhranější skladby |&nbsp;<a href = "artists.html"><U>nejhranější&nbsp;skupiny</U></a>&nbsp;|<br>
-| <a href = "djs.html"><U>žebříčky podle moderátorů</U></a> |</h4> 
+  <h4>| <a href = "index.html"><U>nejhranější skladby</U></a> |&nbsp;<a href = "artists.html"><U>nejhranější&nbsp;skupiny</U></a>&nbsp;|<br>
+| <a href = "djs.html"><U>žebříčky podle moderátorů</U></a> |&nbsp;novinky&nbsp;týdne |</h4> 
 </div>
 <div class="w3-row-padding">
 """)
+    file_news.write(html_menu_news)
+    
+    from_day = actual_day - 7
+    to_day = actual_day
+    
+    chart_lists_news = news_chart.main(from_day, to_day)
+    
+    paragraph_count = 0
+    
+    for chart_list in chart_lists_news:            
+        
+        html_video_header = ("""<div class="w3-third">\n
+    <b>""" + chart_list[0] + """ - """ + chart_list[1] + """</b><br><br>\n""")
+        
+        file_news.write(html_video_header)
+        
+        artisttitle = chart_list[0] + " - " + chart_list[1]
+        target_part = youtube_embed.main(artisttitle)
+        # target_part = "bXrc7w0Yffg" # pro testování - nespouští se youtube scrap
+        
+        html_youtube_embed = ('<div class="video-container"><iframe src="https://www.youtube.com/embed/' + target_part + 
+                              '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"></iframe> </div> <br><br><br>\n')        
+        
+        file_news.write(html_youtube_embed)
+        
+        print("█", end = "", flush=True) #monitor
+            
+        paragraph_count += 1
 
+        if paragraph_count == 3: 
+            html_break1 = ("""
+  </div>
+</div>
+<div class="w3-row-padding">
+""")
+            file_news.write(html_break1)
+            paragraph_count = 0
+        else:
+            html_break2 =("""
+  </div>
+""")
+            file_news.write(html_break2)
+    
+    print("\n")    
+    file_news.write("<br><br>")    
+    
     html_end = ("""</div>
 <div class="w3-container w3-red">
   <br>
 </div>
 </body>
-</html>""") 
+</html>""")     
     
-    file_news.write(html_header)
-    file_news.write(html_menu_news)
-    
-    detail_number_1 = 1
-        
-    for chart_no in range(0,6):            
-        
-        if actual_day - days_back[chart_no] < 1:
-            from_day = 0
-        else:
-            from_day = actual_day - days_back[chart_no]
-
-        to_day = actual_day
-
-        from_day_out = datetime.date(2012, 9, 29) + datetime.timedelta(from_day)
-        to_day_out = datetime.date(2012, 9, 29) + datetime.timedelta(to_day)
-       
-        html_list_dates_tracks =("""  <div class="w3-third">
-    <h2><b> """+ chart_name[chart_no] + """</b> (""" + date_out(from_day_out) + """ - """ + date_out(to_day_out) + """) </h2>  
-""")
-        html_list_dates_artists =("""  <div class="w3-third">
-    <h2><b> """+ chart_name[chart_no] + """</b> (""" + date_out(from_day_out) + """ - """ + date_out(to_day_out) + """) </h2>  
-     <ol>""")
-     
-
-        file_tracks.write(html_list_dates_tracks)
-        file_artists.write(html_list_dates_artists)
-                
-        chart_list_artists = retrieve_chart_artists(from_day, to_day, 0)
-        chart_list_artists_last = retrieve_chart_artists(from_day, to_day, 1)        
-        detail_number_2 = 1
-
-###########################################################generate index.html
-        chart_list_tracks = track_chart.main(from_day, to_day)
-        for item in range(0,20):
-   
-            if chart_list_tracks[item][1] == "-":
-                html_list_tracks = '        <li> -</li>\n' 
-            else:
-                detail_file_number = str(detail_number_1).zfill(2) + "_" + str(detail_number_2).zfill(2)                 
-                
-                html_list_tracks =( '        <li><span style="color:red">' + chart_list_tracks[item][0] + 
-                                    '</span><a href = "track_detail_' + detail_file_number + 
-                                    '.html">' + chart_list_tracks[item][1] + ' - ' + chart_list_tracks[item][2] +
-                                    ' <img src="link.png" width="10" height="10"></a> (' + str(chart_list_tracks[item][3]) +
-                                    ')</li>\n')
-                                    
-                html_list_tracks_bold = ('        <li><span style="color:red">' + chart_list_tracks[item][0] +  
-                                         '</span><a href = "track_detail_' + detail_file_number + 
-                                         '.html"><b>' + chart_list_tracks[item][1] + ' - ' + chart_list_tracks[item][2] + 
-                                         '</b> <img src="link.png" width="10" height="10"></a> (' + str(chart_list_tracks[item][3]) +
-                                         ')</li>\n')
-
-                html_detail_generator.main(str(chart_list_tracks[item][1]),
-                                           str(chart_list_tracks[item][2]),
-                                           str(chart_list_tracks[item][3]),
-                                           str(chart_list_tracks[item][4]),
-                                           str(chart_list_tracks[item][5]),
-                                           str(chart_list_tracks[item][6]),
-                                           str(chart_list_tracks[item][7]),
-                                           detail_file_number,
-                                           days_back[chart_no],
-                                           chart_period[chart_no])
-            detail_number_2 += 1
-                
-            if item == 0:
-                artisttitle = chart_list_tracks[item][1] + " - " + chart_list_tracks[item][2] 
-                html_cover = ("""&nbsp;&nbsp;<a href = "track_detail_""" + detail_file_number + 
-                              """.html"><img src="covers/""" + cover_download.main(artisttitle) + 
-                              """.jpg" width="288" height="162"></a>
-     <ol>
-     """)
-                file_tracks.write(html_cover)
-                file_tracks.write(html_list_tracks_bold)    
-            else:
-                file_tracks.write(html_list_tracks)            
-            
-###########################################################generate artists.html             
-
-            if chart_list_artists[item][0] == "-":
-                html_list_artists = '        <li>-</li>\n' 
-            else:
-                for artist_last in chart_list_artists_last:
-                    arrow = "*&nbsp;"               
-                    if chart_list_artists[item][0] == artist_last[0]:
-                        if chart_list_artists[item][1] > artist_last[1]:
-                            arrow = "&uarr;&nbsp;"
-                        elif chart_list_artists[item][1] < artist_last[1]:
-                            arrow = "&darr;&nbsp;"
-                        else:
-                            arrow = "&nbsp;&nbsp;"
-                        break    
-                html_list_artists = '        <li><span style="color:red">' + arrow +  '</span><a href = "https://www.discogs.com/search/?q=' + urllib.parse.quote_plus(chart_list_artists[item][0]) + '" target="_blank">' + chart_list_artists[item][0] + '</a> (' + str(chart_list_artists[item][1]) + ')</li>\n'
-            file_artists.write(html_list_artists)
-            
-            print("█", end = "", flush=True) #monitor
-            
-        detail_number_1 += 1
-        paragraph_count += 1
-        
-        print("")
-        
-        if paragraph_count == 3: 
-            html_break1 = ("""     </ol>
-  </div>
-</div>
-<div class="w3-row-padding">
-""")
-            file_tracks.write(html_break1)
-            file_artists.write(html_break1)
-        else:
-            html_break2 =("""     </ol>
-  </div>
-""")
-            file_tracks.write(html_break2)
-            file_artists.write(html_break2)
-            
-            
-        
-    file_tracks.write(html_end)
-    file_artists.write(html_end)
-
-    file_tracks.close()
-    file_artists.close()
-    
-###########################################################generate djs.html 
-    
-    to_day = actual_day
-    from_day = 0 # actual_day - 185
-    
-    chart_out = []
-    chart_count_out = []
-    paragraph_count = 0
-    dj_count = 0
-    
-    print("")
-    logger.info("starting djs generator from %s", landscape_data[0]) 
-    print("_________________________________________________________________") #progress bar
-
-    retrieve_djs(from_day, to_day)
-    for dj in djs_lst:
-       
-        chart_list_tracks = retrieve_dj_chart(dj, from_day, to_day, 0)
-        chart_list_tracks_last = retrieve_dj_chart(dj, from_day, to_day, 1)
-        
-        file_djs.write("""  <div class="w3-third">
-    <h2> <b>""" + dj + """</b> (""" + str(dj_tracks_lst[dj_count]) +""" skladeb za 10 let) </h2>  
-      <ol>
-""")
-        
-        for item in range(0, 20):           
-            if chart_list_tracks[item][0] == "-":
-                html_list_tracks = '        <li>-</li>\n' 
-            else:
-                for track_last in chart_list_tracks_last:
-                    arrow = "*&nbsp;"  
-                    if chart_list_tracks[item][0] == track_last[0]:                     
-                        if chart_list_tracks[item][1] > track_last[1]:
-                            arrow = "&uarr;&nbsp;" 
-                        elif chart_list_tracks[item][1] < track_last[1]:
-                            arrow = "&darr;&nbsp;" 
-                        else:
-                            arrow = "&nbsp;&nbsp;"
-                        break    
-                html_list_tracks = '        <li><span style="color:red">' + arrow +  '</span><a href = "https://www.youtube.com/results?search_query=' + urllib.parse.quote_plus(chart_list_tracks[item][0]) + '" target="_blank">' + chart_list_tracks[item][0] + '</a> (' + str(chart_list_tracks[item][1]) + ')</li>\n'
-            file_djs.write(html_list_tracks)
-          
-        paragraph_count += 1
-
-        if paragraph_count % 3 == 0:
-            file_djs.write(html_break1)
-        else:
-            file_djs.write(html_break2)
-        dj_count = dj_count + 1
-        
-        print("█", end = "", flush=True) #monitor
-     
-    print("\n")
-    file_djs.write(html_end)
-    file_djs.close()
-    
-###########################################################generate news.html 
-    logger.info("starting news generator from %s", landscape_data[0])
-    
-    chart_lists_news = news_charts.main(from_day, to_day)
-    
-    
-    file_news.write("Novinky minulého týdne:<br>")
-    detail_number_1 = 1
-    
-    for item in range(0, len(chart_lists_news)):
-        artisttitle = chart_lists_news[item][0] + " - " + chart_lists_news[item][1] 
-        detail_file_number = str(detail_number_1).zfill(2) 
-        html_list_tracks = ('        &nbsp;&nbsp;<a href = "track_detail_' + detail_file_number + '.html">' + artisttitle + 
-                            ' <img src="link.png" width="10" height="10"></a> (' + str(chart_lists_news[item][2]) + ')<br>\n')
-        
-        file_news.write(html_list_tracks)
-        
-        # artist, title, track_plays, dj_index, track_play_index, time_diff_index, artist_play_index, detail_name, days_back, chart_period
-        
-        html_detail_generator.main(str(chart_lists_news[item][0]),
-                           str(chart_lists_news[item][1]),
-                           str(chart_lists_news[item][2]),
-                           "-",
-                           "-",
-                           "-",
-                           "-",
-                           detail_file_number,
-                           7,
-                           "period")
-        
-        detail_number_1+=1
-        
-    
-    file_news.write("<br><br><br><br><br><br><br><br><br><br><br><br>")    
     file_news.write(html_end)
     file_news.close()
     

@@ -97,4 +97,5 @@ def main(from_day, to_day):
         if track[2] == track_all_time(track[0], track[1], to_day): 
             tracks_out.append([track[0], track[1],track[2]])
     
+    print("\n")
     return(tracks_out)
