@@ -292,23 +292,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 html_list_tracks =( '        <li><span style="color:red">' + chart_list_tracks[item][0] + 
                                     '</span><a href = "track_detail_' + detail_file_number + 
                                     '.html">' + chart_list_tracks[item][1] + ' - ' + chart_list_tracks[item][2] +
-                                    ' <img src="link.png" width="10" height="10"></a></li>\n')
+                                    ' <img src="link.png" width="10" height="10"></a> (' + str(chart_list_tracks[item][3]) +
+                                    ')</li>\n')
                                     
                 html_list_tracks_bold = ('        <li><span style="color:red">' + chart_list_tracks[item][0] +  
                                          '</span><a href = "track_detail_' + detail_file_number + 
                                          '.html"><b>' + chart_list_tracks[item][1] + ' - ' + chart_list_tracks[item][2] + 
-                                         '</b> <img src="link.png" width="10" height="10"></a></li>\n')
+                                         '</b> <img src="link.png" width="10" height="10"></a> (' + str(chart_list_tracks[item][3]) +
+                                         ')</li>\n')
 
-                # html_detail_generator.main(str(chart_list_tracks[item][1]),
-                                           # str(chart_list_tracks[item][2]),
-                                           # str(chart_list_tracks[item][3]),
-                                           # str(chart_list_tracks[item][4]),
-                                           # str(chart_list_tracks[item][5]),
-                                           # str(chart_list_tracks[item][6]),
-                                           # str(chart_list_tracks[item][7]),
-                                           # detail_file_number,
-                                           # days_back[chart_no],
-                                           # chart_period[chart_no])
+                html_detail_generator.main(str(chart_list_tracks[item][1]),
+                                           str(chart_list_tracks[item][2]),
+                                           str(chart_list_tracks[item][3]),
+                                           str(chart_list_tracks[item][4]),
+                                           str(chart_list_tracks[item][5]),
+                                           str(chart_list_tracks[item][6]),
+                                           str(chart_list_tracks[item][7]),
+                                           detail_file_number,
+                                           days_back[chart_no],
+                                           chart_period[chart_no])
             detail_number_2 += 1
                 
             if item == 0:
@@ -432,16 +434,35 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     
     chart_lists_news = news_charts.main(from_day, to_day)
     
+    
     file_news.write("Novinky minulého týdne:<br>")
+    detail_number_1 = 1
     
     for item in range(0, len(chart_lists_news)):
         artisttitle = chart_lists_news[item][0] + " - " + chart_lists_news[item][1] 
-        html_list_tracks = ('        &nbsp;&nbsp;<a href = "https://www.youtube.com/results?search_query=' + 
-                            urllib.parse.quote_plus(artisttitle) + 
-                            '" target="_blank">' + artisttitle + 
-                            '</a> (' + str(chart_lists_news[item][2]) + ') <img src="link.png" width="10" height="10"><br>\n')
+        detail_file_number = str(detail_number_1).zfill(2) 
+        html_list_tracks = ('        &nbsp;&nbsp;<a href = "track_detail_' + detail_file_number + '.html">' + artisttitle + 
+                            ' <img src="link.png" width="10" height="10"></a> (' + str(chart_lists_news[item][2]) + ')<br>\n')
+        
         file_news.write(html_list_tracks)
         
+        # artist, title, track_plays, dj_index, track_play_index, time_diff_index, artist_play_index, detail_name, days_back, chart_period
+        
+        html_detail_generator.main(str(chart_lists_news[item][0]),
+                           str(chart_lists_news[item][1]),
+                           str(chart_lists_news[item][2]),
+                           "-",
+                           "-",
+                           "-",
+                           "-",
+                           detail_file_number,
+                           7,
+                           "period")
+        
+        detail_number_1+=1
+        
+    
+    file_news.write("<br><br><br><br><br><br><br><br><br><br><br><br>")    
     file_news.write(html_end)
     file_news.close()
     
