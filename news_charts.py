@@ -68,31 +68,6 @@ def last_week_tracks(from_day, to_day):
     
     return(cursor.fetchall())
     cursor.close()
-    
-# def last_week_artists(from_day, to_day):
-    
-    # from_day = to_day - 7
-    # to_day = to_day
-    
-    # cursor = connection.cursor()
-    # cursor.execute("""
-    # SELECT
-        # clean_artist, COUNT(clean_artist)
-    # FROM
-        # playlist
-    # WHERE days_from BETWEEN ? AND ? 
-    # GROUP BY
-        # clean_artist
-    # HAVING
-        # COUNT(clean_artist) > 1
-    # ORDER BY
-        # COUNT(clean_artist) DESC,
-        # clean_artist ASC
-    # """, (str(from_day), str(to_day)))
-    
-    # return(cursor.fetchall())
-    # cursor.close()
-
 
 def track_all_time(artist, title, actual_day):
 
@@ -112,25 +87,6 @@ def track_all_time(artist, title, actual_day):
     cursor.close()
     return(record[0][0])
       
-# def artist_all_time(artist, actual_day):
-
-    # to_day = actual_day
-    # from_day = 0
-    
-    # cursor = connection.cursor()
-    # cursor.execute("""
-    # SELECT
-        # COUNT(clean_artist)
-    # FROM
-        # playlist
-    # WHERE clean_artist = ? AND days_from BETWEEN ? AND ?     
-    # """, (artist, str(from_day),str(to_day)))
-    
-    # record = cursor.fetchall()
-    # cursor.close()
- 
-    # return(record[0][0])
-
 def main(from_day, to_day):       
     chart_tracks = last_week_tracks(from_day, to_day)
 
