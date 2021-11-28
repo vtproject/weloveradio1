@@ -199,28 +199,25 @@ def indexed_chart(from_day, to_day, days_back):
     return(indexed_chart)        
 
 def main(from_day, to_day):       
-    chart = indexed_chart(from_day, to_day, 0)
-    chart_last = indexed_chart(from_day, to_day, 1)
+    # chart = indexed_chart(from_day, to_day, 0)
+    # chart_last = indexed_chart(from_day, to_day, 1)
     
-    # print(chart)
-    # print(chart_last)
-        
-    chart_out = []
+    # chart_out = []
     
-    for track in chart:
-        arrow = "*&nbsp;"
-        if (track[1] == "-" and track[2] == ""):
-            arrow = "&nbsp;&nbsp;"
-        else:
-            for track_last in chart_last:
-                if (track[1] == track_last[1] and track[2] == track_last[2]):
-                    if track[3] > track_last[3]:
-                        arrow = "&uarr;&nbsp;" 
-                    elif track[3] < track_last[3]:
-                        arrow = "&darr;&nbsp;" 
-                    else:
-                        arrow = "&nbsp;&nbsp;"
-                    break
-        #print(arrow, track[1], track[2], track[3], track[4], track[5], track[6], track[7])
-        chart_out.append([arrow, track[1], track[2], track[3], track[4], track[5], track[6], track[7]])
-    return(chart_out)  
+    # for track in chart:
+        # arrow = "*&nbsp;"
+        # if (track[1] == "-" and track[2] == ""):
+            # arrow = "&nbsp;&nbsp;"
+        # else:
+            # for track_last in chart_last:
+                # if (track[1] == track_last[1] and track[2] == track_last[2]):
+                    # if track[3] > track_last[3]:
+                        # arrow = "&uarr;&nbsp;" 
+                    # elif track[3] < track_last[3]:
+                        # arrow = "&darr;&nbsp;" 
+                    # else:
+                        # arrow = "&nbsp;&nbsp;"
+                    # break
+        # chart_out.append([arrow, track[1], track[2], track[3], track[4], track[5], track[6], track[7]])
+    # return(chart_out)
+    return([['&nbsp;&nbsp;', 'ARLETA', 'Statement', 4, 4, 4, 0.3, 34], ['&nbsp;&nbsp;', 'MINISTRY', 'Good Trouble', 3, 9, 12, 11.9, 142], ['&nbsp;&nbsp;', 'BADFOCUS', 'Defy', 3, 6, 12, 41.5, 34], ['&darr;&nbsp;', 'JACK WHITE', 'Taking Me Back', 3, 6, 8, 4.0, 356], ['&nbsp;&nbsp;', 'DUNCAN FORBES', 'The Next Step', 3, 3, 3, 1.0, 9], ['&nbsp;&nbsp;', 'OTIK', 'Lightyear Dub', 3, 3, 3, 1.5, 51], ['&nbsp;&nbsp;', 'OVERMONO', 'Bby', 3, 3, 3, 1.5, 46], ['&nbsp;&nbsp;', 'HVOB', 'Bruise', 3, 3, 3, 2.5, 471], ['&nbsp;&nbsp;', 'MODERAT', 'Bad Kingdom', 2, 28, 125, 25.7, 889], ['&nbsp;&nbsp;', 'BICEP', 'Atlas', 2, 12, 41, 18.0, 350], ['&nbsp;&nbsp;', 'ARAB STRAP', 'The Turning Of Our Bones', 2, 9, 26, 21.8, 55], ['&nbsp;&nbsp;', 'PERFUME GENIUS', 'Describe', 2, 9, 13, 53.2, 212], ['&nbsp;&nbsp;', 'AMELIE SIBA', 'Ljubljana', 2, 9, 11, 2.8, 119], ['&nbsp;&nbsp;', 'TENNIS', 'Need Your Love', 2, 8, 16, 44.7, 201], ['&nbsp;&nbsp;', 'SPIRITUALIZED', 'Always Together With You', 2, 8, 8, 2.9, 126], ['&nbsp;&nbsp;', 'GREG DULLI', 'It Falls Apart', 2, 7, 15, 45.5, 34], ['&nbsp;&nbsp;', 'BLACK MARBLE', 'Somewhere', 2, 7, 12, 9.5, 82], ['&nbsp;&nbsp;', 'GRANDBROTHERS', 'Organism', 2, 7, 11, 30.8, 120], ['&nbsp;&nbsp;', 'BILLIE EILISH', 'Oxytocin', 2, 6, 11, 11.2, 211], ['*&nbsp;', 'TOMÁŠ TKÁČ', 'Ale/Jestli', 2, 5, 8, 80.3, 27]])    

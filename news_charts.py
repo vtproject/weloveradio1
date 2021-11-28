@@ -69,29 +69,29 @@ def last_week_tracks(from_day, to_day):
     return(cursor.fetchall())
     cursor.close()
     
-def last_week_artists(from_day, to_day):
+# def last_week_artists(from_day, to_day):
     
-    from_day = to_day - 7
-    to_day = to_day
+    # from_day = to_day - 7
+    # to_day = to_day
     
-    cursor = connection.cursor()
-    cursor.execute("""
-    SELECT
-        clean_artist, COUNT(clean_artist)
-    FROM
-        playlist
-    WHERE days_from BETWEEN ? AND ? 
-    GROUP BY
-        clean_artist
-    HAVING
-        COUNT(clean_artist) > 1
-    ORDER BY
-        COUNT(clean_artist) DESC,
-        clean_artist ASC
-    """, (str(from_day), str(to_day)))
+    # cursor = connection.cursor()
+    # cursor.execute("""
+    # SELECT
+        # clean_artist, COUNT(clean_artist)
+    # FROM
+        # playlist
+    # WHERE days_from BETWEEN ? AND ? 
+    # GROUP BY
+        # clean_artist
+    # HAVING
+        # COUNT(clean_artist) > 1
+    # ORDER BY
+        # COUNT(clean_artist) DESC,
+        # clean_artist ASC
+    # """, (str(from_day), str(to_day)))
     
-    return(cursor.fetchall())
-    cursor.close()
+    # return(cursor.fetchall())
+    # cursor.close()
 
 
 def track_all_time(artist, title, actual_day):
@@ -112,42 +112,33 @@ def track_all_time(artist, title, actual_day):
     cursor.close()
     return(record[0][0])
       
-def artist_all_time(artist, actual_day):
+# def artist_all_time(artist, actual_day):
 
-    to_day = actual_day
-    from_day = 0
+    # to_day = actual_day
+    # from_day = 0
     
-    cursor = connection.cursor()
-    cursor.execute("""
-    SELECT
-        COUNT(clean_artist)
-    FROM
-        playlist
-    WHERE clean_artist = ? AND days_from BETWEEN ? AND ?     
-    """, (artist, str(from_day),str(to_day)))
+    # cursor = connection.cursor()
+    # cursor.execute("""
+    # SELECT
+        # COUNT(clean_artist)
+    # FROM
+        # playlist
+    # WHERE clean_artist = ? AND days_from BETWEEN ? AND ?     
+    # """, (artist, str(from_day),str(to_day)))
     
-    record = cursor.fetchall()
-    cursor.close()
+    # record = cursor.fetchall()
+    # cursor.close()
  
-    return(record[0][0])
+    # return(record[0][0])
 
 def main(from_day, to_day):       
     chart_tracks = last_week_tracks(from_day, to_day)
-    chart_artists = last_week_artists(from_day, to_day)
 
     tracks_out = []
-    artists_out = []
     
     for track in chart_tracks:
         print("█", end = "", flush=True) #monitor
         if track[2] == track_all_time(track[0], track[1], to_day): 
             tracks_out.append([track[0], track[1],track[2]])
     
-
-    for track in chart_artists:
-        print("█", end = "", flush=True) #monitor
-        if track[1] == artist_all_time(track[0], to_day): 
-            artists_out.append([track[0],track[1]])    
-    
-    return([tracks_out, artists_out])
-    # return([[['ARLETA', 'Statement', 4], ['DUNCAN FORBES', 'The Next Step', 3], ['HVOB', 'Bruise', 3], ['OTIK', 'Lightyear Dub', 3], ['OVERMONO', 'Bby', 3], ['AI FEN', 'Can You Believe', 2], ['ASTA HIROKI', 'Fold', 2], ['BEACH HOUSE', 'Superstar', 2], ['BEN CAPLAN', 'Birds With Broken Wings', 2], ['BIG THIEF', 'Time Escaping', 2], ['CARDINAL SOUND', 'Imagine', 2], ['CLAMS CASINO', 'Misty', 2], ['DÝM', 'Andělský Tornádo', 2], ['EARL SWEATSHIRT', '2010', 2], ['LAND OF TALK', 'Leave Life Alone', 2], ['LOZ GODDARD', 'When Time Slows It Feels Weird', 2], ['NILS FRAHM', 'Late', 2], ['SALARYMAN', 'Your Shadow', 2], ['SOICHI TERADA', 'Double Spire', 2], ['TEETHGRYNDER', 'Not Lonely', 2], ['THE MICRONAUT', 'Ice Hockey', 2], ['YUMI AND THE WEATHER', 'Howl', 2], ['YUUL', 'Feel Ft. Kyson', 2]], [['TEETHGRYNDER', 3], ['CARDINAL SOUND', 2], ['DOMENICO STARNONE', 2], ['DÝM', 2], ['MISO EXTRA', 2], ['NEVEREŠ', 2], ['ROBOTS WITH NO SOUL', 2], ['SERENA GABRIEL', 2], ['SUSTRAPPERAZZI', 2]]])
+    return(tracks_out)

@@ -271,6 +271,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         html_list_dates_artists =("""  <div class="w3-third">
     <h2><b> """+ chart_name[chart_no] + """</b> (""" + date_out(from_day_out) + """ - """ + date_out(to_day_out) + """) </h2>  
      <ol>""")
+     
 
         file_tracks.write(html_list_dates_tracks)
         file_artists.write(html_list_dates_artists)
@@ -427,27 +428,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     file_djs.close()
     
 ###########################################################generate news.html 
-    logger.info("starting news generator from %s", landscape_data[0]) 
+    logger.info("starting news generator from %s", landscape_data[0])
+    
     chart_lists_news = news_charts.main(from_day, to_day)
     
-    file_news.write("Novinka = Hraná více jak 2x v minulém týdnu AND nebyla hraní nikdy před tím<br><br>Novinky skladby <br><br>")
+    file_news.write("Novinky minulého týdne:<br>")
     
-    for item in range(0, len(chart_lists_news[0])):
-        artisttitle = chart_lists_news[0][item][0] + " - " + chart_lists_news[0][item][1] 
-        html_list_tracks = ('        <li><a href = "https://www.youtube.com/results?search_query=' + 
+    for item in range(0, len(chart_lists_news)):
+        artisttitle = chart_lists_news[item][0] + " - " + chart_lists_news[item][1] 
+        html_list_tracks = ('        &nbsp;&nbsp;<a href = "https://www.youtube.com/results?search_query=' + 
                             urllib.parse.quote_plus(artisttitle) + 
                             '" target="_blank">' + artisttitle + 
-                            '</a> (' + str(chart_lists_news[0][item][2]) + ')</li>\n')
+                            '</a> (' + str(chart_lists_news[item][2]) + ') <img src="link.png" width="10" height="10"><br>\n')
         file_news.write(html_list_tracks)
-        
-    file_news.write("<br>Novinky skupiny <br><br>")
-    
-    for item in range(0, len(chart_lists_news[1])):
-        html_list_tracks = ('        <li><a href = "https://www.youtube.com/results?search_query=' + 
-                            urllib.parse.quote_plus(str(chart_lists_news[1][item][0])) + 
-                            '" target="_blank">' + str(chart_lists_news[1][item][0]) + 
-                            '</a> (' + str(chart_lists_news[1][item][1]) + ')</li>\n')
-        file_news.write(html_list_tracks)        
         
     file_news.write(html_end)
     file_news.close()
