@@ -134,11 +134,11 @@ landscape_file = open("landscape.switch", "r")
 landscape_switch = landscape_file.read()
 landscape_file.close()
 if landscape_switch == "PROD":
-    landscape_data = ["weloveradio1db_P.sqlite", "html_P/index.html", "html_P/artists.html", "html_P/djs.html"]
+    landscape_data = ["weloveradio1db_P.sqlite", "html_P/tracks.html", "html_P/artists.html", "html_P/djs.html"]
 elif landscape_switch == "TEST":
-    landscape_data = ["weloveradio1db_T.sqlite", "html_T/index.html", "html_T/artists.html", "html_T/djs.html"]
+    landscape_data = ["weloveradio1db_T.sqlite", "html_T/tracks.html", "html_T/artists.html", "html_T/djs.html"]
 else:
-    landscape_data = ["weloveradio1db_D.sqlite", "html_D/index.html", "html_D/artists.html", "html_D/djs.html"]
+    landscape_data = ["weloveradio1db_D.sqlite", "html_D/tracks.html", "html_D/artists.html", "html_D/djs.html"]
 
 connection = sqlite3.connect(landscape_data[0])
         
@@ -153,7 +153,7 @@ days_back = [7, 30, 183, 365, 1825, 3650]
 chart_name = ["za minulý týden", "za minulý měsíc", "za minulých 6 měsíců", "za minulý rok", "za minulých 5 let", "za minulých 10 let"]
 chart_period = ["v minulém týdnu", "v minulém měsíci", "v minulých 6 měsících", "v minulém roce", "v minulých 5 letech", "v minulých 10 letech"]
 try:
-    logger.info("starting tracks, details and artists html generator from %s", landscape_data[0]) 
+    logger.info("starting html generators from %s", landscape_data[0]) 
     
     file_tracks = open(landscape_data[1], "w") #delete previous test file 
     file_artists = open(landscape_data[2], "w") 
@@ -202,22 +202,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </div>""")
 
     html_menu_tracks =("""<div class="w3-container">
-  <h4>| nejhranější skladby |&nbsp;<a href = "artists.html"><U>nejhranější&nbsp;skupiny</U></a>&nbsp;|<br>
-| <a href = "djs.html"><U>žebříčky podle moderátorů</U></a> |</h4> 
+  <h4>| <b>nejhranější skladby</b> |&nbsp;<a href = "artists.html"><U>nejhranější&nbsp;skupiny</U></a>&nbsp;|<br>
+| <a href = "djs.html"><U>žebříčky podle moderátorů</U></a> |<a href = "index.html">&nbsp;<U>novinky&nbsp;týdne</U>&nbsp;|</h4> 
 </div>
 <div class="w3-row-padding">
 """)
     
     html_menu_artists =("""<div class="w3-container">
-  <h4>| <a href = "index.html"><U>nejhranější skladby</U></a> |&nbsp;nejhranější&nbsp;skupiny&nbsp;|<br>
-| <a href = "djs.html"><U>žebříčky podle moderátorů</U></a> |</h4> 
+  <h4>| <a href = "tracks.html"><U>nejhranější skladby</U></a> |&nbsp;<b>nejhranější&nbsp;skupiny</b>&nbsp;|<br>
+| <a href = "djs.html"><U>žebříčky podle moderátorů</U></a> |<a href = "index.html">&nbsp;<U>novinky&nbsp;týdne</U>&nbsp;|</h4> 
 </div>
 <div class="w3-row-padding">
 """)
 
     html_menu_djs = ("""<div class="w3-container">
-  <h4>| <a href = "index.html"><U>nejhranější skladby</U></a> |&nbsp;<a href = "artists.html"><U>nejhranější&nbsp;skupiny</U></a>&nbsp;|<br>
-| žebříčky podle moderátorů |</h4> 
+  <h4>| <a href = "tracks.html"><U>nejhranější skladby</U></a> |&nbsp;<a href = "artists.html"><U>nejhranější&nbsp;skupiny</U></a>&nbsp;|<br>
+| <b>žebříčky podle moderátorů</b> |<a href = "index.html">&nbsp;<U>novinky&nbsp;týdne</U>&nbsp;|</h4> 
 </div>
 <div class="w3-row-padding">
 """)
@@ -426,6 +426,6 @@ finally:
     if connection:
         connection.close()
         logger.info("files %s, %s and %s generated", landscape_data[1], landscape_data[2], landscape_data[3] )
-        logger.info("db %s closed", landscape_data[0])
+        # logger.info("db %s closed", landscape_data[0])
 
 

@@ -47,7 +47,7 @@ else:
 logger.info("starting upload to ftp.muteme.cz/%s",landscape_data[0])
 
 from_file = open("file.txt", "r")
-files = ["artists.html", "djs.html", "index.html", "news.html"]
+files = ["artists.html", "djs.html", "tracks.html", "index.html"]
 myFTP = ftplib.FTP("ftp.muteme.cz", "muteme", from_file.read())
 
 myFTP.cwd(landscape_data[0])

@@ -47,11 +47,11 @@ landscape_file = open("landscape.switch", "r")
 landscape_switch = landscape_file.read()
 landscape_file.close()
 if landscape_switch == "PROD":
-    landscape_data = ["weloveradio1db_P.sqlite", "html_P/index.html", "html_P/artists.html", "html_P/djs.html", "html_P/news.html"]
+    landscape_data = ["weloveradio1db_P.sqlite", "html_P/tracks.html", "html_P/artists.html", "html_P/djs.html", "html_P/index.html"]
 elif landscape_switch == "TEST":
-    landscape_data = ["weloveradio1db_T.sqlite", "html_T/index.html", "html_T/artists.html", "html_T/djs.html", "html_T/news.html"]
+    landscape_data = ["weloveradio1db_T.sqlite", "html_T/tracks.html", "html_T/artists.html", "html_T/djs.html", "html_T/index.html"]
 else:
-    landscape_data = ["weloveradio1db_D.sqlite", "html_D/index.html", "html_D/artists.html", "html_D/djs.html", "html_D/news.html"]
+    landscape_data = ["weloveradio1db_D.sqlite", "html_D/tracks.html", "html_D/artists.html", "html_D/djs.html", "html_D/index.html"]
 
 connection = sqlite3.connect(landscape_data[0])
         
@@ -107,19 +107,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     file_news.write(html_header)
     
     html_menu_news =("""<div class="w3-container">
-  <h4>| <a href = "index.html"><U>nejhranější skladby</U></a> |&nbsp;<a href = "artists.html"><U>nejhranější&nbsp;skupiny</U></a>&nbsp;|<br>
-| <a href = "djs.html"><U>žebříčky podle moderátorů</U></a> |&nbsp;novinky&nbsp;týdne |</h4> 
+  <h4>| <a href = "tracks.html"><U>nejhranější skladby</U></a> |&nbsp;<a href = "artists.html"><U>nejhranější&nbsp;skupiny</U></a>&nbsp;|<br>
+| <a href = "djs.html"><U>žebříčky podle moderátorů</U></a> |&nbsp;<b>novinky&nbsp;týdne&nbsp;</b>|</h4> 
 </div>
-<div class="w3-row-padding">
 """)
     file_news.write(html_menu_news)
     
-    from_day = actual_day - 7
+    from_day = actual_day - 6
     to_day = actual_day
     
     chart_lists_news = news_chart.main(from_day, to_day)
     
     paragraph_count = 0
+    
+    from_day_out = datetime.date(2012, 9, 29) + datetime.timedelta(from_day)
+    to_day_out = datetime.date(2012, 9, 29) + datetime.timedelta(to_day)
+    
+    html_list_dates_news =("""<div class="w3-container">
+    <h2> Týden """ + date_out(from_day_out) + """ - """ + date_out(to_day_out) + """</h2>
+  </div>
+<div class="w3-row-padding">  
+""")
+    file_news.write(html_list_dates_news)
     
     for chart_list in chart_lists_news:            
         
@@ -172,13 +181,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 paragraph_count = 0            
             else:
                 html_break1 = ("""     
+           <br>
+           <br>
       </div>
     """)
                 file_news.write(html_break1)
                 
             print("█", end = "", flush=True) #monitor    
-    
-    html_end = ("""</div><br><br>
+    print("\n")
+    html_end = ("""</div>
 <div class="w3-container w3-red">
   <br>
 </div>
@@ -194,7 +205,7 @@ except sqlite3.Error as error:
 finally:
     if connection:
         connection.close()
-        logger.info("files %s, %s and %s generated", landscape_data[1], landscape_data[2], landscape_data[3] )
-        logger.info("db %s closed", landscape_data[0])
+        logger.info("file %s generated", landscape_data[4])
+        # logger.info("db %s closed", landscape_data[0])
 
 
