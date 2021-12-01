@@ -124,7 +124,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     to_day_out = datetime.date(2012, 9, 29) + datetime.timedelta(to_day)
     
     html_list_dates_news =("""<div class="w3-container">
-    <h2> Týden """ + date_out(from_day_out) + """ - """ + date_out(to_day_out) + """</h2>
+    <h2> týden """ + date_out(from_day_out) + """ - """ + date_out(to_day_out) + """</h2>
   </div>
 <div class="w3-row-padding">  
 """)
