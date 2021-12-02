@@ -108,7 +108,7 @@ def tracks_month_back(artist, actual_day):
 def djs_week_back(artist, title, actual_day):
 
     to_day = actual_day
-    from_day = actual_day - 7
+    from_day = actual_day - 6
     
     cursor = connection.cursor()
     cursor.execute("""

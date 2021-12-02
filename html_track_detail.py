@@ -143,7 +143,7 @@ def main(artist, title, track_plays, dj_index, track_play_index, time_diff_index
     </div>""")
 
         html_menu_details =("""<div class="w3-container">
-      <h4>| <a href = "index.html"><U>nejhranější skladby</U></a> |&nbsp;<a href = "artists.html"><U>nejhranější&nbsp;skupiny</U></a>&nbsp;|<br>
+      <h4>| <a href = "tracks.html"><U>nejhranější skladby</U></a> |&nbsp;<a href = "artists.html"><U>nejhranější&nbsp;skupiny</U></a>&nbsp;|<br>
     | <a href = "djs.html"><U>žebříčky podle moderátorů</U></a> |<a href = "index.html">&nbsp;<U>novinky&nbsp;týdne</U>&nbsp;|<br>
     <br>
     <a href = "index.html">&#60; <U>zpět na nehranější skladby</U><br><br></a></h4> 

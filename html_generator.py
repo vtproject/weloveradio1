@@ -149,7 +149,7 @@ execute_date = update_date - datetime.timedelta(1) # Datum generování html
 
 actual_day = execute_date - datetime.date(2012, 9, 29)
 actual_day = actual_day.days
-days_back = [7, 30, 183, 365, 1825, 3650]
+days_back = [6, 30, 182, 364, 1824, 3650]
 chart_name = ["za minulý týden", "za minulý měsíc", "za minulých 6 měsíců", "za minulý rok", "za minulých 5 let", "za minulých 10 let"]
 chart_period = ["v minulém týdnu", "v minulém měsíci", "v minulých 6 měsících", "v minulém roce", "v minulých 5 letech", "v minulých 10 letech"]
 try:

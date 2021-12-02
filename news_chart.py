@@ -47,7 +47,7 @@ connection = sqlite3.connect(landscape_data[0])
 
 def last_week_tracks(from_day, to_day):
     
-    from_day = to_day - 7
+    from_day = to_day - 6
     to_day = to_day
     
     cursor = connection.cursor()
