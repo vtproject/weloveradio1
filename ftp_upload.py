@@ -63,10 +63,18 @@ for file in files:
 for detail_number_1 in range(1, 7):
     for detail_number_2 in range (1, 21):
         detail_name = str(detail_number_1).zfill(2) + "_" + str(detail_number_2).zfill(2)
-        file = "track_detail_" + detail_name + ".html"
-        upload = open(file, "rb")        
+        file_track = "track_detail_" + detail_name + ".html"
+        file_artist = "artist_detail_" + detail_name + ".html"
+        
+        upload = open(file_track, "rb")        
         myFTP.storbinary("STOR %s" % file, upload)
         upload.close()
+
+        upload = open(file_artist, "rb")        
+        myFTP.storbinary("STOR %s" % file, upload)
+        upload.close()        
+        
+        
     print("█", end = "", flush=True) #monitor    
     
 print("\n")

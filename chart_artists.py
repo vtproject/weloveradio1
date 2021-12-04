@@ -204,11 +204,9 @@ def indexed_chart(from_day, to_day, days_back):
     for item in range(0,20):
         indexed_chart[item].append(cnt) #přidání čísla pořadí v žebříčku
         cnt+=1
-    print(indexed_chart)
     return(indexed_chart)        
 
 def main(from_day, to_day):  
-    print(from_day, to_day)     
     chart = indexed_chart(from_day, to_day, 0)
     chart_last = indexed_chart(from_day, to_day, 1)
     
@@ -229,7 +227,6 @@ def main(from_day, to_day):
                         arrow = "&nbsp;&nbsp;"
                     break
         chart_out.append([arrow, track[1], track[2], track[3], track[0]])
-    print(chart_out)
     return(chart_out)
     # return([['&nbsp;&nbsp;', 'THE WAR ON DRUGS', 'Wasted', 4], ['&nbsp;&nbsp;', 'DÝM', 'Andělský Tornádo', 4],
     # ['&nbsp;&nbsp;', 'ISLAND MINT', 'Suburbs', 2], ['&nbsp;&nbsp;', 'AIKO', 'Gemini', 2],

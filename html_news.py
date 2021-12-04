@@ -4,7 +4,6 @@ import re
 import logging
 import news_chart
 import youtube_embed
-import uni_detail
 
 def date_out(datum):
     date_out_f = str(datum)
@@ -12,6 +11,31 @@ def date_out(datum):
     date_out_f = date_out_f.strftime('%#d.%#m.%Y')
     return date_out_f
 
+def djs_week_back(artist, title, actual_day):
+
+    to_day = actual_day
+    from_day = actual_day - 6
+    
+    cursor = connection.cursor()
+    cursor.execute("""
+    SELECT
+        clean_tracklist_dj, day, month, year
+    FROM
+        playlist
+    WHERE clean_artist = ? AND clean_title = ? AND days_from BETWEEN ? AND ? 
+    ORDER BY
+        year DESC,
+        month DESC,
+        day DESC;
+    """, (artist, title, str(from_day),str(to_day)))
+    
+    record = cursor.fetchall()
+    cursor.close()
+    
+    if not record:
+        return("není")
+    else:    
+        return(record)    
 
 #logging
 if __name__ == "__main__":
@@ -132,7 +156,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     
     for chart_list in chart_lists_news:            
         
-        record = uni_detail.djs_week_back(chart_list[0], chart_list[1], actual_day)
+        record = djs_week_back(chart_list[0], chart_list[1], actual_day)
         dj_check = []
         for item in record:
             dj_check.append(item[0])

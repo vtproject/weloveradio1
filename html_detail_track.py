@@ -9,6 +9,74 @@ def date_out(datum):
     date_out_f = datetime.datetime.strptime(date_out_f, '%Y-%m-%d')
     date_out_f = date_out_f.strftime('%#d.%#m.%Y')
     return date_out_f
+    
+def dj_first_play(artist, title, actual_day):
+
+    to_day = actual_day - 30
+    from_day = 0
+    
+    cursor = connection.cursor()
+    cursor.execute("""
+    SELECT
+        clean_tracklist_dj, day, month, year
+    FROM
+        playlist
+    WHERE clean_artist = ? AND clean_title = ? AND days_from BETWEEN ? AND ? 
+    ORDER BY
+        year DESC,
+        month DESC,
+        day DESC;
+    """, (artist, title, str(from_day),str(to_day)))
+    
+    record = cursor.fetchall()
+    cursor.close()
+    
+    if not record:
+        return("není")
+    else:    
+        return(record[-1])
+        
+def month_back(artist, title, actual_day):
+    to_day = actual_day
+    from_day = actual_day - 30
+    
+    cursor = connection.cursor()
+    cursor.execute("""
+    SELECT
+        clean_tracklist_dj, day, month, year
+    FROM
+        playlist
+    WHERE clean_artist = ? AND clean_title = ? AND days_from BETWEEN ? AND ? 
+    ORDER BY
+        year DESC,
+        month DESC,
+        day DESC;
+    """, (artist, title, str(from_day),str(to_day)))
+    
+    record = cursor.fetchall()
+    return(record)
+    cursor.close()
+    
+def past_month(artist, title, actual_day):
+    to_day = actual_day - 6
+    from_day = 0
+
+    cursor = connection.cursor()
+    cursor.execute("""
+    SELECT
+        clean_tracklist_dj, COUNT(clean_tracklist_dj)
+    FROM
+        playlist
+    WHERE clean_artist = ? AND clean_title = ? AND days_from BETWEEN ? AND ? 
+    GROUP BY
+        clean_tracklist_dj
+    ORDER BY
+        COUNT(clean_tracklist_dj) DESC;
+    """, (artist, title, str(from_day),str(to_day)))
+    
+    record = cursor.fetchall()
+    return(record)
+    cursor.close()
 
 
 #logging
@@ -53,50 +121,13 @@ else:
 
 connection = sqlite3.connect(landscape_data[0])
 
-update_date = datetime.date.today()  # Datum generování datetime.date(2021, 4, 3)  datetime.date.today() 
-execute_date = update_date - datetime.timedelta(1) # Datum generování html  
-actual_day = execute_date - datetime.date(2012, 9, 29)
-actual_day = actual_day.days
-
-def main(artist, title, track_plays, detail_name, days_back, chart_period):        
+def main(artist, title, detail_name, actual_day):        
     try:
-        to_day = actual_day
-        from_day = actual_day - days_back
-        
-        cursor = connection.cursor()
-        cursor.execute("""
-        SELECT
-            clean_tracklist_dj, day, month, year
-        FROM
-            playlist
-        WHERE clean_artist = ? AND clean_title = ? AND days_from BETWEEN ? AND ? 
-        ORDER BY
-            year DESC,
-            month DESC,
-            day DESC;
-        """, (artist, title, str(from_day),str(to_day)))
-        
-        record = cursor.fetchall()
-        cursor.close()
-        
-        to_day = actual_day - days_back - 1
-        from_day = 0
+        update_date = datetime.date.today()
 
-        cursor = connection.cursor()
-        cursor.execute("""
-        SELECT
-            clean_tracklist_dj, day, month, year
-        FROM
-            playlist
-        WHERE clean_artist = ? AND clean_title = ? AND days_from BETWEEN ? AND ? 
-        ORDER BY
-            year DESC,
-            month DESC,
-            day DESC;
-        """, (artist, title, str(from_day),str(to_day)))
+        record = month_back(artist, title, actual_day)
+        record_past_list =  past_month(artist, title, actual_day)
         
-        record_past_list = cursor.fetchall()
-        cursor.close()
         
         # logger.info("starting html generator from %s", landscape_data[0]) 
         
@@ -152,10 +183,11 @@ def main(artist, title, track_plays, detail_name, days_back, chart_period):
     """)
     
         html_track_title =("""Detail skladby <b>""" + artist + """ - """ + title + """</b>:<br><br>\n""")
-        html_track_info =("""Skladbu hráli """ + chart_period + """:<br><br>\n""")
-        html_past_list_info = ("""<br>Před tímto obdobím skladbu hráli:<br><br>\n""")
-        html_nikdo = ("""<br>Před tímto obdobím ještě nikdo skladbu nehrál.<br><br>\n""")
-
+        html_track_info =("""<b>Skladbu hráli v minulém měsíci:</b><br><br>\n""")
+        html_past_list_info = ("""<br><b>Dříve skladbu hráli:</b><br><br>\n""")
+        html_nikdo = ("""<br><b>Dříve ještě nikdo skladbu nehrál.</b><br>\n""")
+        html_nikdo_v_mesici = ("""<b>Skladbu v minulém měsící nikdo nehrál.</b></br>\n""")
+        
         artisttitle = artist + " - " + title
           
         import youtube_embed
@@ -168,35 +200,55 @@ def main(artist, title, track_plays, detail_name, days_back, chart_period):
         file_details.write(html_menu_details)
         file_details.write(html_track_title)
         file_details.write(html_youtube_embed)
-        file_details.write(html_track_info)
+        
 
         
-        for detail_row in record:
-            if detail_row[0] is None:
-                dj = "Neznámý DJ"
-            elif detail_row[0] == "-":
-                dj = "Neznámý DJ"
-            else:
-                dj = str(detail_row[0])
-            detail_row_out = str(detail_row[1]).zfill(2) + "." + str(detail_row[2]).zfill(2) + "." + str(detail_row[3]) + " : " + dj + "<br>\n"
-            file_details.write(detail_row_out)
+        if not record:
+            file_details.write(html_nikdo_v_mesici)
+        else:
+            file_details.write(html_track_info)
+            for detail_row in record:
+                if detail_row[0] is None:
+                    dj = "Neznámý DJ"
+                elif detail_row[0] == "-":
+                    dj = "Neznámý DJ"
+                else:
+                    dj = str(detail_row[0])
+                detail_row_out = str(detail_row[1]).zfill(2) + "." + str(detail_row[2]).zfill(2) + "." + str(detail_row[3]) + " : " + dj + "<br>\n"
+                file_details.write(detail_row_out)
 
-        if days_back != 3650:
-            if not record_past_list:
-                file_details.write(html_nikdo)
-            else:
-                file_details.write(html_past_list_info) 
-                
-                for detail_row in record_past_list:
-                    if detail_row[0] is None:
-                        dj = "Neznámý DJ"
-                    elif detail_row[0] == "-":
-                        dj = "Neznámý DJ"
+
+        if not record_past_list:
+            file_details.write(html_nikdo)
+        else:
+            file_details.write(html_past_list_info) 
+            
+            for detail_row in record_past_list:
+                if detail_row[0] is None:
+                    dj = "Neznámý DJ"
+                elif detail_row[0] == "-":
+                    dj = "Neznámý DJ"
+                else:
+                    if detail_row[1] < 10:
+                        detail_row_out = "&nbsp;&nbsp;" + str(detail_row[1]) + " x " + str(detail_row[0]) + "<br>\n"
                     else:
-                        dj = str(detail_row[0])
-                    detail_row_out = str(detail_row[1]).zfill(2) + "." + str(detail_row[2]).zfill(2) + "." + str(detail_row[3]) + " : " + dj + "<br>\n"
-                    file_details.write(detail_row_out)
-     
+                        detail_row_out = str(detail_row[1]) + " x " + str(detail_row[0]) + "<br>\n"
+                        
+                file_details.write(detail_row_out)
+        
+        first_play = dj_first_play(artist, title, actual_day)
+        
+        if detail_row[0] is None:
+            dj = "Neznámý DJ"
+        elif detail_row[0] == "-":
+            dj = "Neznámý DJ"
+        else:
+            dj = str(detail_row[0])
+                
+        first_play_out =("""<br><b>Skladbu od října 2012 poprvé hrál/a:</b><br><br>""" + 
+                         str(first_play[1]).zfill(2) + "." + str(first_play[2]).zfill(2) + "." + 
+                         str(first_play[3]) + " : " + dj + """<br>\n""")
+        file_details.write(first_play_out)
             
         html_end = ("""</div>
        <br>
@@ -210,3 +262,8 @@ def main(artist, title, track_plays, detail_name, days_back, chart_period):
         logger.error("Failed:%s", error)
 
 
+# main("MINISTRY", "Good Trouble", "_test", 3352)
+# main("ARLETA", "Statement", "_test", 3352)
+# main("OVERMONO", "Diamond Cut", "_test", 3352)  
+# main("WARPAINT", "Love Is To Die", "_test", 3352)
+# main("FLOEX", "Drama Queen", "_test", 3352)
