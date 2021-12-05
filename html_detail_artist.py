@@ -12,7 +12,7 @@ def date_out(datum):
     
 def dj_first_play(artist, actual_day):
 
-    to_day = actual_day - 30
+    to_day = actual_day
     from_day = 0
     
     cursor = connection.cursor()
@@ -31,10 +31,7 @@ def dj_first_play(artist, actual_day):
     record = cursor.fetchall()
     cursor.close()
     
-    if not record:
-        return([])
-    else:    
-        return(record[-1])
+    return(record[-1])
         
 def month_back(artist, actual_day):
     to_day = actual_day
@@ -74,6 +71,28 @@ def track_chart(artist, actual_day):
         COUNT(clean_title) > 1   
     ORDER BY
         COUNT(clean_title) DESC
+    LIMIT 20;
+    """, (artist, str(from_day),str(to_day)))
+    
+    record = cursor.fetchall()
+    return(record)
+    cursor.close()
+    
+def dj_chart(artist, actual_day):
+    to_day = actual_day
+    from_day = 0
+
+    cursor = connection.cursor()
+    cursor.execute("""
+    SELECT
+        clean_tracklist_dj, COUNT(clean_tracklist_dj)
+    FROM
+        playlist
+    WHERE clean_artist = ? AND clean_dj_status = 1 AND days_from BETWEEN ? AND ? 
+    GROUP BY
+        clean_tracklist_dj
+    ORDER BY
+        COUNT(clean_tracklist_dj) DESC
     LIMIT 20;
     """, (artist, str(from_day),str(to_day)))
     
@@ -186,8 +205,8 @@ def main(artist, detail_name, actual_day):
     """)
     
         html_track_title =("""Detail skupiny <b>""" + artist + """</b>:<br><br>\n""")
-        html_track_info =("""<b>Skupinu hráli v minulém měsíci:</b><br><br>\n""")
-        html_track_chart_info = ("""<br><b>Nejhranější skladby:</b><br>\n<ol>\n""")
+        html_track_info =("""<b>Skladby hrané v minulém měsíci:</b><br><br>\n""")
+        html_track_chart_info = ("""<br><b>Nejhranější skladby od skupiny """ + artist + """:</b><br>\n<ol>\n""")
         html_nikdo_v_mesici = ("""<b>Skupinu v minulém měsící nikdo nehrál.</b></br>\n""")
         
         import youtube_embed
@@ -216,8 +235,8 @@ def main(artist, detail_name, actual_day):
                 else:
                     dj = str(detail_row[0])   
                 detail_row_out =(str(detail_row[2]).zfill(2) + '.' + str(detail_row[3]).zfill(2) + '.' +
-                                 str(detail_row[4]) + ' : ' + dj + ' : <a href = "https://www.youtube.com/results?search_query=' + urllib.parse.quote_plus(artisttitle) +
-                '" target="_blank">' + detail_row[1] + '</a> <img src="link.png" width="10" height="10"><br>\n')
+                                 str(detail_row[4]) + ' : <a href = "https://www.youtube.com/results?search_query=' + urllib.parse.quote_plus(artisttitle) +
+                '" target="_blank">' + detail_row[1] + '</a> <img src="link.png" width="10" height="10"> / ' + dj + '<br>\n')
                 file_details.write(detail_row_out)
 
         file_details.write(html_track_chart_info) 
@@ -238,27 +257,45 @@ def main(artist, detail_name, actual_day):
                 
             file_details.write(detail_row_out)
         file_details.write("</ol>")
-                
-        # first_play = dj_first_play(artist, actual_day)
         
-        # if not first_play:
-           # first_play_out = ""
-        # else:  
-            # if detail_row[0] is None:
-                # dj = "Neznámý DJ"
-            # elif detail_row[0] == "-":
-                # dj = "Neznámý DJ"
-            # else:
-                # dj = str(detail_row[0])
+        html_dj_list = ("""<br><b>Kdo nejvíc skupinu hrál:</b><br><ol>\n""")
+        file_details.write(html_dj_list)
+        
+        record_dj =  dj_chart(artist, actual_day)
+        
+        for detail_row in record_dj:
+            if detail_row[0] is None:
+                dj = "Neznámý DJ"
+            elif detail_row[0] == "-":
+                dj = "Neznámý DJ"
+            else:
+                dj = detail_row[0]
 
-            # first_play_out =("""<br><b>Skladbu od října 2012 poprvé hrál/a:</b><br>""" + 
-                            # str(first_play[2]).zfill(2) + "." + str(first_play[3]).zfill(2) + "." + str(first_play[4]) +
-                            # " : " + dj + " / "  + first_play[1] +"""<br>\n""")
-        # file_details.write(first_play_out)
+            detail_row_out = "<li>" + dj + " (" + str(detail_row[1]) + ")</li>\n"
+
+            file_details.write(detail_row_out)
+        file_details.write("</ol>")
+                
+        first_play = dj_first_play(artist, actual_day)
+        artisttitle = artist + " " + first_play[1]
+ 
+        if first_play[0] is None:
+            dj = "Neznámý DJ"
+        elif first_play[0] == "-":
+            dj = "Neznámý DJ"
+        else:
+            dj = str(first_play[0])
+
+        first_play_out =("""<br><b>První hraná  skladba (od září 2012):</b><br><br>""" + 
+                        str(first_play[2]).zfill(2) + '.' + str(first_play[3]).zfill(2) + '.' + str(first_play[4]) + 
+                        ' : <a href = "https://www.youtube.com/results?search_query=' + urllib.parse.quote_plus(artisttitle) +
+                        '" target="_blank">' + first_play[1] + '</a> <img src="link.png" width="10" height="10"> / ' + dj + '<br>\n')
+        file_details.write(first_play_out)
             
-        html_end = ("""</div>
-       <br>
-       <br>
+        html_end = ("""<br><br></div>
+    <div class="w3-container w3-red">
+      <br>
+    </div>
     </body>
     </html>""") 
         file_details.write(html_end)
@@ -267,3 +304,10 @@ def main(artist, detail_name, actual_day):
     except sqlite3.Error as error:
         logger.error("Failed:%s", error)
 
+# main("MINISTRY", "_test", 3352)
+# main("ARLETA", "_test", 3352)
+# main("OVERMONO", "_test", 3352)  
+# main("WARPAINT", "_test", 3352)
+# main("FLOEX", "_test", 3352)
+# main("DÝM", "_test", 3353)
+# main("TOSCA", "_test", 3353)

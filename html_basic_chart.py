@@ -122,13 +122,22 @@ def main(html_switch):
       <br>
     </div>""")
         file.write(html_header)
-
-        html_menu =("""<div class="w3-container">
-      <h4>| <b>nejhranější skladby</b> |&nbsp;<a href = "artists.html"><U>nejhranější&nbsp;skupiny</U></a>&nbsp;|<br>
-    | <a href = "djs.html"><U>žebříčky podle moderátorů</U></a> |<a href = "index.html">&nbsp;<U>novinky&nbsp;týdne</U>&nbsp;|</h4> 
-    </div>
-    <div class="w3-row-padding">
-    """)
+        
+        if html_switch == "tracks":
+            html_menu =("""<div class="w3-container">
+          <h4>| <b>nejhranější skladby</b> |&nbsp;<a href = "artists.html"><U>nejhranější&nbsp;skupiny</U></a>&nbsp;|<br>
+        | <a href = "djs.html"><U>žebříčky podle moderátorů</U></a> |<a href = "index.html">&nbsp;<U>novinky&nbsp;týdne</U>&nbsp;|</h4> 
+        </div>
+        <div class="w3-row-padding">
+        """)
+        elif html_switch == "artists":
+            html_menu =("""<div class="w3-container">
+          <h4>| <a href = "tracks.html"><U>nejhranější skladby</U></a> |&nbsp;<b>nejhranější&nbsp;skupiny</b>&nbsp;|<br>
+        | <a href = "djs.html"><U>žebříčky podle moderátorů</U></a> |<a href = "index.html">&nbsp;<U>novinky&nbsp;týdne</U>&nbsp;|</h4> 
+        </div>
+        <div class="w3-row-padding">
+        """)
+    
         file.write(html_menu)
             
         detail_number_1 = 1
@@ -200,11 +209,20 @@ def main(html_switch):
                 detail_number_2 += 1
                     
                 if item == 0:
-                    html_cover = ("""&nbsp;&nbsp;<a href = "track_detail_""" + detail_file_number + 
-                                  """.html"><img src="covers/""" + cover_download.main(item_name) + 
-                                  """.jpg" width="288" height="162"></a>
+                
+                    if html_switch == "tracks":
+                        html_cover = ("""&nbsp;&nbsp;<a href = "track_detail_""" + detail_file_number + 
+                                      """.html"><img src="covers/""" + cover_download.main(item_name) + 
+                                      """.jpg" width="288" height="162"></a>
          <ol>
          """)
+                    elif html_switch == "artists":
+                        html_cover = ("""&nbsp;&nbsp;<a href = "artist_detail_""" + detail_file_number + 
+                                      """.html"><img src="covers/""" + cover_download.main(item_name) + 
+                                      """.jpg" width="288" height="162"></a>
+         <ol>
+         """)
+         
                     file.write(html_cover)
                     file.write(html_list_bold)    
                 else:

@@ -67,11 +67,11 @@ for detail_number_1 in range(1, 7):
         file_artist = "artist_detail_" + detail_name + ".html"
         
         upload = open(file_track, "rb")        
-        myFTP.storbinary("STOR %s" % file, upload)
+        myFTP.storbinary("STOR %s" % file_track, upload)
         upload.close()
 
         upload = open(file_artist, "rb")        
-        myFTP.storbinary("STOR %s" % file, upload)
+        myFTP.storbinary("STOR %s" % file_artist, upload)
         upload.close()        
         
         

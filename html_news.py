@@ -2,7 +2,7 @@ import sqlite3
 import datetime
 import re
 import logging
-import news_chart
+import chart_news
 import youtube_embed
 
 def date_out(datum):
@@ -140,7 +140,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     from_day = actual_day - 6
     to_day = actual_day
     
-    chart_lists_news = news_chart.main(from_day, to_day)
+    chart_lists_news = chart_news.main(from_day, to_day)
     
     paragraph_count = 0
     

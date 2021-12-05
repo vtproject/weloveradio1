@@ -12,7 +12,7 @@ def date_out(datum):
     
 def dj_first_play(artist, title, actual_day):
 
-    to_day = actual_day - 30
+    to_day = actual_day
     from_day = 0
     
     cursor = connection.cursor()
@@ -30,11 +30,8 @@ def dj_first_play(artist, title, actual_day):
     
     record = cursor.fetchall()
     cursor.close()
-    
-    if not record:
-        return("není")
-    else:    
-        return(record[-1])
+
+    return(record[-1])
         
 def month_back(artist, title, actual_day):
     to_day = actual_day
@@ -57,8 +54,8 @@ def month_back(artist, title, actual_day):
     return(record)
     cursor.close()
     
-def past_month(artist, title, actual_day):
-    to_day = actual_day - 6
+def dj_chart(artist, title, actual_day):
+    to_day = actual_day
     from_day = 0
 
     cursor = connection.cursor()
@@ -67,7 +64,7 @@ def past_month(artist, title, actual_day):
         clean_tracklist_dj, COUNT(clean_tracklist_dj)
     FROM
         playlist
-    WHERE clean_artist = ? AND clean_title = ? AND days_from BETWEEN ? AND ? 
+    WHERE clean_artist = ? AND clean_title = ? AND clean_dj_status = 1 AND days_from BETWEEN ? AND ? 
     GROUP BY
         clean_tracklist_dj
     ORDER BY
@@ -126,7 +123,7 @@ def main(artist, title, detail_name, actual_day):
         update_date = datetime.date.today()
 
         record = month_back(artist, title, actual_day)
-        record_past_list =  past_month(artist, title, actual_day)
+        record_dj =  dj_chart(artist, title, actual_day)
         
         
         # logger.info("starting html generator from %s", landscape_data[0]) 
@@ -184,7 +181,7 @@ def main(artist, title, detail_name, actual_day):
     
         html_track_title =("""Detail skladby <b>""" + artist + """ - """ + title + """</b>:<br><br>\n""")
         html_track_info =("""<b>Skladbu hráli v minulém měsíci:</b><br><br>\n""")
-        html_past_list_info = ("""<br><b>Dříve skladbu hráli:</b><br><br>\n""")
+        html_dj_list = ("""<br><b>Kdo nejvíc skladbu hrál:</b><br><ol>\n""")
         html_nikdo = ("""<br><b>Dříve ještě nikdo skladbu nehrál.</b><br>\n""")
         html_nikdo_v_mesici = ("""<b>Skladbu v minulém měsící nikdo nehrál.</b></br>\n""")
         
@@ -218,41 +215,39 @@ def main(artist, title, detail_name, actual_day):
                 file_details.write(detail_row_out)
 
 
-        if not record_past_list:
-            file_details.write(html_nikdo)
-        else:
-            file_details.write(html_past_list_info) 
-            
-            for detail_row in record_past_list:
-                if detail_row[0] is None:
-                    dj = "Neznámý DJ"
-                elif detail_row[0] == "-":
-                    dj = "Neznámý DJ"
-                else:
-                    if detail_row[1] < 10:
-                        detail_row_out = "&nbsp;&nbsp;" + str(detail_row[1]) + " x " + str(detail_row[0]) + "<br>\n"
-                    else:
-                        detail_row_out = str(detail_row[1]) + " x " + str(detail_row[0]) + "<br>\n"
-                        
-                file_details.write(detail_row_out)
+        
+        file_details.write(html_dj_list) 
+        
+        for detail_row in record_dj:
+            if detail_row[0] is None:
+                dj = "Neznámý DJ"
+            elif detail_row[0] == "-":
+                dj = "Neznámý DJ"
+            else:
+                dj = detail_row[0]
+
+            detail_row_out = "<li>" + dj + " (" + str(detail_row[1]) + ")</li>\n"
+
+            file_details.write(detail_row_out)
         
         first_play = dj_first_play(artist, title, actual_day)
         
-        if detail_row[0] is None:
+        if first_play[0] is None:
             dj = "Neznámý DJ"
-        elif detail_row[0] == "-":
+        elif first_play[0] == "-":
             dj = "Neznámý DJ"
         else:
-            dj = str(detail_row[0])
+            dj = str(first_play[0])
                 
-        first_play_out =("""<br><b>Skladbu od října 2012 poprvé hrál/a:</b><br><br>""" + 
+        first_play_out =("""</ol><br><b>Skladbu poprvé hrál/a (od září 2012):</b><br><br>""" + 
                          str(first_play[1]).zfill(2) + "." + str(first_play[2]).zfill(2) + "." + 
                          str(first_play[3]) + " : " + dj + """<br>\n""")
         file_details.write(first_play_out)
             
-        html_end = ("""</div>
-       <br>
-       <br>
+        html_end = ("""<br><br></div>
+    <div class="w3-container w3-red">
+      <br>
+    </div>
     </body>
     </html>""") 
         file_details.write(html_end)
@@ -267,3 +262,4 @@ def main(artist, title, detail_name, actual_day):
 # main("OVERMONO", "Diamond Cut", "_test", 3352)  
 # main("WARPAINT", "Love Is To Die", "_test", 3352)
 # main("FLOEX", "Drama Queen", "_test", 3352)
+# main("DÝM", "Andělský Tornádo", "_test", 3353)

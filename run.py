@@ -63,9 +63,11 @@ else:
 
 
 
-    import html_generator
+    import html_basic_chart
 
-    import html_news_generator
+    import html_news
+    
+    import html_djs
 
     import ftp_upload
 
