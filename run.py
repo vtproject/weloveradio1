@@ -63,13 +63,11 @@ else:
 
 
 
-    # print("\n data OK? > Enter")
-    # input()
+    import html_basic_chart
 
-    import html_generator
-
-    # print("\n html OK? > Enter")
-    # input()
+    import html_news
+    
+    import html_djs
 
     import ftp_upload
 

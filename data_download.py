@@ -211,7 +211,7 @@ def main(execute_date):
         sqliteConnection = sqlite3.connect(landscape_data[0]) 
         
         cursor = sqliteConnection.cursor()
-        logger.info("Successfully Connected to db %s", landscape_data[0])
+        # logger.info("Successfully Connected to db %s", landscape_data[0])
         url = "https://www.radio1.cz/program/?date=" + tracklist_day
         req = requests.get(url)
         soup = BeautifulSoup(req.content, 'html.parser') 
@@ -310,7 +310,7 @@ def main(execute_date):
         cursor.close()
         if sqliteConnection:
             sqliteConnection.close()
-            logger.info("db %s closed", landscape_data[0])
+            # logger.info("db %s closed", landscape_data[0])
           
     except (requests.exceptions.RequestException, sqlite3.Error)  as error:     
         logger.error("%s", error)

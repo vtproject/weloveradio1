@@ -47,7 +47,7 @@ else:
 logger.info("starting upload to ftp.muteme.cz/%s",landscape_data[0])
 
 from_file = open("file.txt", "r")
-files = ["artists.html", "djs.html", "index.html"]
+files = ["artists.html", "djs.html", "tracks.html", "index.html"]
 myFTP = ftplib.FTP("ftp.muteme.cz", "muteme", from_file.read())
 
 myFTP.cwd(landscape_data[0])
@@ -63,10 +63,18 @@ for file in files:
 for detail_number_1 in range(1, 7):
     for detail_number_2 in range (1, 21):
         detail_name = str(detail_number_1).zfill(2) + "_" + str(detail_number_2).zfill(2)
-        file = "track_detail_" + detail_name + ".html"
-        upload = open(file, "rb")        
-        myFTP.storbinary("STOR %s" % file, upload)
+        file_track = "track_detail_" + detail_name + ".html"
+        file_artist = "artist_detail_" + detail_name + ".html"
+        
+        upload = open(file_track, "rb")        
+        myFTP.storbinary("STOR %s" % file_track, upload)
         upload.close()
+
+        upload = open(file_artist, "rb")        
+        myFTP.storbinary("STOR %s" % file_artist, upload)
+        upload.close()        
+        
+        
     print("█", end = "", flush=True) #monitor    
     
 print("\n")
