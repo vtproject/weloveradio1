@@ -126,14 +126,14 @@ def main(html_switch):
         if html_switch == "tracks":
             html_menu =("""<div class="w3-container">
           <h4>| <b>nejhranější skladby</b> |&nbsp;<a href = "artists.html"><U>nejhranější&nbsp;skupiny</U></a>&nbsp;|<br>
-        | <a href = "djs.html"><U>žebříčky podle moderátorů</U></a> |<a href = "index.html">&nbsp;<U>novinky&nbsp;týdne</U>&nbsp;|</h4> 
+        | <a href = "djs.html"><U>žebříčky podle moderátorů</U></a> |<a href = "index.html">&nbsp;<U>novinky&nbsp;týdne</U></a>&nbsp;|</h4> 
         </div>
         <div class="w3-row-padding">
         """)
         elif html_switch == "artists":
             html_menu =("""<div class="w3-container">
           <h4>| <a href = "tracks.html"><U>nejhranější skladby</U></a> |&nbsp;<b>nejhranější&nbsp;skupiny</b>&nbsp;|<br>
-        | <a href = "djs.html"><U>žebříčky podle moderátorů</U></a> |<a href = "index.html">&nbsp;<U>novinky&nbsp;týdne</U>&nbsp;|</h4> 
+        | <a href = "djs.html"><U>žebříčky podle moderátorů</U></a> |<a href = "index.html">&nbsp;<U>novinky&nbsp;týdne</U></a>&nbsp;|</h4> 
         </div>
         <div class="w3-row-padding">
         """)
