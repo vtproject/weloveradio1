@@ -143,6 +143,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     chart_lists_news = chart_news.main(from_day, to_day)
     
     paragraph_count = 0
+    video_count = 0
     
     from_day_out = datetime.date(2012, 9, 29) + datetime.timedelta(from_day)
     to_day_out = datetime.date(2012, 9, 29) + datetime.timedelta(to_day)
@@ -192,6 +193,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             file_news.write(detail_row_out)
         
         paragraph_count += 1
+        video_count += 1
 
         if paragraph_count == 3:
             html_break2 =("""
@@ -228,7 +230,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if chart_lists_news == []:
         file_news.write(html_nikdo)
     
-    if paragraph_count > 3: 
+    if video_count > 3: 
         file_news.write(html_end)
     file_news.close()
     
