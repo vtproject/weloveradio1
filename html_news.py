@@ -1,4 +1,3 @@
-#test
 import sqlite3
 import datetime
 import re
@@ -163,58 +162,58 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         for item in record:
             dj_check.append(item[0])
         
-        #if not all(x == dj_check[0] for x in dj_check): # zobrazení pouze pokud hríli minimálně dva různí djs
+        if not all(x == dj_check[0] for x in dj_check): # zobrazení pouze pokud hríli minimálně dva různí djs
         
-        html_video_header = (""" <div class="w3-third">
- <b>""" + chart_list[0] + """ - """ + chart_list[1] + """</b><br>\n""")
-        
-        file_news.write(html_video_header)
-        
-        artisttitle = chart_list[0] + " - " + chart_list[1]
-        target_part = youtube_embed.main(artisttitle)
-        # target_part = "bXrc7w0Yffg" # pro testování - nespouští se youtube scrap
-        
-        html_youtube_embed = ('<div class="video-container">\n<iframe src="https://www.youtube.com/embed/' + target_part + 
-                              '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"></iframe></div><br>\n')        
-        
-        file_news.write(html_youtube_embed)
-        
-        file_news.write("Skladbu poprvé hráli:<br>")
-        
-        
-        
-        for detail_row in record:
-            if detail_row[0] is None:
-                dj = "Neznámý DJ"
-            elif detail_row[0] == "-":
-                dj = "Neznámý DJ"
-            else:
-                dj = str(detail_row[0])
-            detail_row_out = str(detail_row[1]).zfill(2) + "." + str(detail_row[2]).zfill(2) + "." + str(detail_row[3]) + " : " + dj + "<br>\n"
-            file_news.write(detail_row_out)
-        
-        paragraph_count += 1
-        video_count += 1
-
-        if paragraph_count == 3:
-            html_break2 =("""
-           <br>
-           <br>
-         </div>  
-      </div>
-      <div class="w3-row-padding">
-    """)
-            file_news.write(html_break2)
-            paragraph_count = 0            
-        else:
-            html_break1 = ("""     
-       <br>
-       <br>
-  </div>
-""")
-            file_news.write(html_break1)
+            html_video_header = (""" <div class="w3-third">
+     <b>""" + chart_list[0] + """ - """ + chart_list[1] + """</b><br>\n""")
             
-        print("█", end = "", flush=True) #monitor    
+            file_news.write(html_video_header)
+            
+            artisttitle = chart_list[0] + " - " + chart_list[1]
+            target_part = youtube_embed.main(artisttitle)
+            # target_part = "bXrc7w0Yffg" # pro testování - nespouští se youtube scrap
+            
+            html_youtube_embed = ('<div class="video-container">\n<iframe src="https://www.youtube.com/embed/' + target_part + 
+                                  '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"></iframe></div><br>\n')        
+            
+            file_news.write(html_youtube_embed)
+            
+            file_news.write("Skladbu poprvé hráli:<br>")
+            
+            
+            
+            for detail_row in record:
+                if detail_row[0] is None:
+                    dj = "Neznámý DJ"
+                elif detail_row[0] == "-":
+                    dj = "Neznámý DJ"
+                else:
+                    dj = str(detail_row[0])
+                detail_row_out = str(detail_row[1]).zfill(2) + "." + str(detail_row[2]).zfill(2) + "." + str(detail_row[3]) + " : " + dj + "<br>\n"
+                file_news.write(detail_row_out)
+            
+            paragraph_count += 1
+            video_count += 1
+
+            if paragraph_count == 3:
+                html_break2 =("""
+               <br>
+               <br>
+             </div>  
+          </div>
+          <div class="w3-row-padding">
+        """)
+                file_news.write(html_break2)
+                paragraph_count = 0            
+            else:
+                html_break1 = ("""     
+           <br>
+           <br>
+      </div>
+    """)
+                file_news.write(html_break1)
+                
+            print("█", end = "", flush=True) #monitor    
     
     
     print("\n")
