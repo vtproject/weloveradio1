@@ -53,21 +53,21 @@ def count_limit(from_day, to_day, days_back):
     cursor = connection.cursor()
     cursor.execute("""
         SELECT
-            clean_artist, COUNT(clean_artist)
+            calc_artist, COUNT(calc_artist)
         FROM   (SELECT
-            clean_artist
+            calc_artist
         FROM
             playlist
         WHERE clean_status = 1 AND days_from BETWEEN ? AND ?
         GROUP BY
-            clean_artist, raw_tracklist_no)
+            calc_artist, raw_tracklist_no)
         GROUP BY 
-            clean_artist
+            calc_artist
         HAVING
-            COUNT(clean_artist) > 1    
+            COUNT(calc_artist) > 1    
         ORDER BY
-            COUNT(clean_artist) DESC,
-            clean_artist ASC
+            COUNT(calc_artist) DESC,
+            calc_artist ASC
     LIMIT 20;
     """, (str(from_day), str(to_day)))
       
@@ -93,21 +93,21 @@ def retrieve_chart(from_day, to_day, limit, days_back):
         cursor = connection.cursor()
         cursor.execute("""
         SELECT
-            clean_artist, COUNT(clean_artist)
+            calc_artist, COUNT(calc_artist)
         FROM   (SELECT
-            clean_artist
+            calc_artist
         FROM
             playlist
         WHERE clean_status = 1 AND days_from BETWEEN ? AND ?
         GROUP BY
-            clean_artist, raw_tracklist_no)
+            calc_artist, raw_tracklist_no)
         GROUP BY 
-            clean_artist
+            calc_artist
         HAVING
-            COUNT(clean_artist) > ?    
+            COUNT(calc_artist) > ?    
         ORDER BY
-            COUNT(clean_artist) DESC,
-            clean_artist ASC;
+            COUNT(calc_artist) DESC,
+            calc_artist ASC;
         """, (str(from_day), str(to_day), limit))
         return(cursor.fetchall())
         cursor.close()
@@ -129,7 +129,7 @@ def artist_index(artist):
                 clean_tracklist_dj, days_from
             FROM
                 playlist
-            WHERE clean_artist = ? 
+            WHERE calc_artist = ? 
             ORDER BY
                 days_from DESC;
             """, (artist,))
@@ -143,7 +143,7 @@ def artist_index(artist):
                 clean_title
             FROM
                 playlist
-            WHERE clean_artist = ?
+            WHERE calc_artist = ?
             GROUP BY
                 clean_title;            
             """, (artist,))

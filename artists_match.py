@@ -43,10 +43,12 @@ def match_one(clartist):
 
 def match_first(row):
     result = cosine(csr_matrix.toarray(bow_matrix_second[pos]), csr_matrix.toarray(bow_matrix_second[row]))
+    result = 1 - result
     return(result)
 
 def match_second(row):
     result = cosine(csr_matrix.toarray(bow_matrix_second[pos]), csr_matrix.toarray(bow_matrix_second[row]))
+    result = 1 - result
     return(result)      
 
 def match_artists(clartist, jnartist, titles, calcartist, row):
@@ -142,7 +144,12 @@ def main(pos_list):
     bow_matrix_second = bow_transformer.transform(df["second_word"])
 
     time_global = time.time()
+    
+    print(len(pos_list))
+    count = 1
+    
     for row in pos_list:
+        print(count)
         pos = row - 1
         if df.iloc[pos].to_list()[6] == "-":
             time_loop = time.time()
@@ -158,9 +165,8 @@ def main(pos_list):
             df["calcartist"] = df.apply(lambda x: match_artists(x.clartist, x.jnartist, x.titles, x.calcartist, x.name), axis=1)
             print(round(time.time()-time_loop, 1), " sec per artist")
             print(round((time.time()-time_global)/60, 1), " minutes running")
-        
+        count += 1
 
     cursor.execute("DROP TABLE artists")
 
     df.to_sql(name="artists", con=con, index=False)
-main([1008, 1009, 1010]) 

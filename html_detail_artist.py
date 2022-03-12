@@ -21,7 +21,7 @@ def dj_first_play(artist, actual_day):
         clean_tracklist_dj, clean_title, day, month, year
     FROM
         playlist
-    WHERE clean_artist = ? AND days_from BETWEEN ? AND ? 
+    WHERE calc_artist = ? AND days_from BETWEEN ? AND ? 
     ORDER BY
         year DESC,
         month DESC,
@@ -43,7 +43,7 @@ def month_back(artist, actual_day):
         clean_tracklist_dj, clean_title, day, month, year
     FROM
         playlist
-    WHERE clean_artist = ? AND days_from BETWEEN ? AND ? 
+    WHERE calc_artist = ? AND days_from BETWEEN ? AND ? 
     ORDER BY
         year DESC,
         month DESC,
@@ -64,7 +64,7 @@ def track_chart(artist, actual_day):
         clean_title, COUNT(clean_title)
     FROM
         playlist
-    WHERE clean_artist = ? AND days_from BETWEEN ? AND ? 
+    WHERE calc_artist = ? AND days_from BETWEEN ? AND ? 
     GROUP BY
         clean_title
     HAVING
@@ -88,7 +88,7 @@ def dj_chart(artist, actual_day):
         clean_tracklist_dj, COUNT(clean_tracklist_dj)
     FROM
         playlist
-    WHERE clean_artist = ? AND clean_dj_status = 1 AND days_from BETWEEN ? AND ? 
+    WHERE calc_artist = ? AND clean_dj_status = 1 AND days_from BETWEEN ? AND ? 
     GROUP BY
         clean_tracklist_dj
     ORDER BY
