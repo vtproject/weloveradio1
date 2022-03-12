@@ -57,7 +57,7 @@ else:
 
 connection = sqlite3.connect(landscape_data[0])
         
-update_date = datetime.date.today() # Datum generování datetime.date(2021, 4, 3)  datetime.date.today() 
+update_date = datetime.date(2022, 2, 17) # Datum generování datetime.date(2021, 4, 3)  datetime.date.today() 
 execute_date = update_date - datetime.timedelta(1) # Datum generování html  
 
 actual_day = execute_date - datetime.date(2012, 9, 29)
@@ -269,5 +269,5 @@ def main(html_switch):
             logger.info("files %s, %s and %s generated", landscape_data[1], landscape_data[2], landscape_data[3] )
 
 main("artists")
-main("tracks")
+#main("tracks")
 
