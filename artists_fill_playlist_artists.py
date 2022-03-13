@@ -46,49 +46,47 @@ else:
     landscape_data = ["weloveradio1db_D.sqlite", "html_D/"]
 
 connection = sqlite3.connect(landscape_data[0])
+cur_artists = connection.cursor()
+cur_playlist_read = connection.cursor()
+cur_playlist_write = connection.cursor()
 
-# max from day = 3436    
-
-# first run:
-# from_day = 3436 - 7 - 10 = 3419
-# to_day = 3436 -10
-
-# from_day = 3436 - 9
-# to_day = 3436 - 9 = 3427
-
-cursor = connection.cursor()
-cursor.execute("""
+cur_artists.execute("""
     SELECT
-        clean_artist, COUNT(clean_artist)
-    FROM   (SELECT
-        clean_artist
+        clartist, calcartist
     FROM
-        playlist
-    WHERE clean_status = 1 AND days_from BETWEEN ? AND ?
-    GROUP BY
-        clean_artist, raw_tracklist_no)
-    GROUP BY 
-        clean_artist
-    ORDER BY
-        COUNT(clean_artist) DESC,
-        clean_artist ASC
-""", (str(from_day), str(to_day)))
-  
-chart_unsorted = cursor.fetchall()
+        artists
+    WHERE
+        calcartist != '-'""")
 
-cursor.execute("""
-    SELECT
-        clartist, id
-    FROM
-        artists""")
+artist_names_couple = cur_artists.fetchall()
 
-artist_ids = dict(cursor.fetchall())
-cursor.close()
+cur_artists.close()
 
-ids = []
-for artist in chart_unsorted:
-    ids.append(artist_ids[artist[0]])
+print(len(artist_names_couple))
+counter = 1
 
-print(len(ids))
+for artist in artist_names_couple:
+    
+    print(counter, artist[1])
+    counter += 1
+    
+    cur_playlist_read.execute("""
+        SELECT
+            id
+        FROM
+            playlist
+        WHERE clean_artist = ?
+        """, (artist[0],))
+     
+    for row in cur_playlist_read:
 
-artists_match.main(ids)
+            cur_playlist_write.execute("""
+            UPDATE
+                playlist
+            SET
+                calc_artist = ? where id = ?
+            """, (artist[1], str(row[0])))
+
+connection.commit()
+cur_playlist_read.close()
+cur_playlist_write.close()

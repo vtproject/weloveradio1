@@ -182,6 +182,8 @@ def indexed_chart(from_day, to_day, days_back):
     cnt = 1
     for track in chart:
         raw_index = artist_index(track[0])
+        if not raw_index:
+            raw_index = [0, 0, 0, 0]
         index = (str(track[1]).zfill(4) + "." + #počet přehrání skupiny v období
                  str(raw_index[0]).zfill(2) + "." + #počet djs celkem, kteří skupinu hráli
                  str(raw_index[1]).zfill(4) + "." + #počet přehrání skupiny celkem

@@ -42,7 +42,7 @@ def match_one(clartist):
 
 
 def match_first(row):
-    result = cosine(csr_matrix.toarray(bow_matrix_second[pos]), csr_matrix.toarray(bow_matrix_second[row]))
+    result = cosine(csr_matrix.toarray(bow_matrix_first[pos]), csr_matrix.toarray(bow_matrix_first[row]))
     result = 1 - result
     return(result)
 
